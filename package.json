@@ -1,0 +1,20 @@
+{
+  "name": "style-story-premium",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Style Story fashion store with admin dashboard and manual UPI QR checkout",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
