@@ -225,7 +225,16 @@ app.get("/api/config", (req, res) => res.json({
 
 app.get("/api/products", (req, res) => {
   const products = readProducts().filter(p => p.active !== false);
-  res.json(products);
+  const paidStatuses = new Set(["PAID", "PROCESSING", "SHIPPED", "DELIVERED"]);
+  const sales = new Map();
+  for (const order of readJson(ORDERS_FILE)) {
+    if (!paidStatuses.has(order.status)) continue;
+    for (const item of order.items || []) {
+      const id = String(item.id ?? item.productId ?? "");
+      if (id) sales.set(id, (sales.get(id) || 0) + Math.max(0, Number(item.quantity) || 0));
+    }
+  }
+  res.json(products.map(product => ({ ...product, soldCount: sales.get(String(product.id)) || 0 })));
 });
 
 app.post("/api/admin/login", (req, res) => {
