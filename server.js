@@ -45,7 +45,7 @@ const ADMIN_SMS_NUMBER = process.env.ADMIN_SMS_NUMBER || "";
 fs.mkdirSync(DATA_DIR, { recursive: true });
 if (!fs.existsSync(PRODUCTS_FILE)) fs.writeFileSync(PRODUCTS_FILE, "[]\n");
 if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, "[]\n");
-if (!fs.existsSync(PUSH_SUBSCRIPTIONS_FILE)) fs.writeFileSync(PUSH_SUBSCRIPTIONS_FILE, "[]\\n");
+if (!fs.existsSync(PUSH_SUBSCRIPTIONS_FILE)) fs.writeFileSync(PUSH_SUBSCRIPTIONS_FILE, "[]\n");
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
