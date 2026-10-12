@@ -802,6 +802,34 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
   .track-hotspot{left:57.5%!important;top:2%!important;width:10.6%!important;height:8.8%!important}
 }
 
+
+/* Mobile storefront layout aligned to the approved scroll-based mockup */
+@media(max-width:650px){
+  .category-showcase{padding:30px 16px 28px!important}
+  .category-heading{text-align:center!important;margin:0 auto 20px!important}
+  .category-heading h2{font-size:clamp(29px,7.8vw,38px)!important;line-height:1.12!important}
+  .category-heading p{margin:0 auto!important;max-width:340px!important}
+  .category-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .category-tile:last-child{grid-column:1/-1!important}
+  .section#shop{padding:32px 16px 44px!important}
+  .section#shop .section-head{align-items:center!important;text-align:center!important;flex-direction:column!important;margin-bottom:20px!important}
+  .section#shop .section-head>div{width:100%}
+  .section#shop .section-head .eyebrow{text-align:center}
+  .section#shop .section-head h2{font-size:clamp(29px,7.5vw,36px)!important;margin:8px 0!important}
+  .section#shop .section-head p{font-size:14px!important}
+  #productCount{align-self:flex-end;font-size:12px!important}
+  .shop-tools{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin:20px 0 14px!important}
+  .search-box{grid-column:1/-1!important;min-height:56px}
+  .select-filter{min-width:0!important;padding:7px 9px 3px!important;border-radius:12px!important}
+  .select-filter span{font-size:8px!important;letter-spacing:.08em!important}
+  .select-filter select{font-size:11px!important;padding:6px 0 8px!important}
+  .filters{display:flex!important;flex-wrap:wrap!important;gap:7px!important;margin:0 0 18px!important}
+  .filter{padding:9px 13px!important;font-size:12px!important}
+  #products .empty{min-height:190px;padding:28px 18px!important;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;line-height:1.55;border-radius:14px}
+  .cart-fab{right:12px!important;bottom:18px!important;padding:10px 13px!important;font-size:12px!important;z-index:7}
+  .section#newArrivals{padding-top:36px!important}
+}
+
 </style>
 </head>
 <body>
