@@ -314,7 +314,7 @@ app.post("/api/checkout/upi-order", (req, res) => {
     if (!product) return res.status(400).json({ error: "A product in your bag no longer matches the current store list. Please remove that item, refresh the store, add it again, and retry checkout.", unavailableProductId: String(submittedId ?? "missing-id") });
     if (product.stock < qty) return res.status(400).json({ error: `Only ${product.stock} unit(s) left for ${product.name}.` });
     total += product.price * qty;
-    orderItems.push({ id: product.id, name: product.name, price: product.price, quantity: qty, size: cleanText(item.size, 20) });
+    orderItems.push({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl, category: product.category, quantity: qty, size: cleanText(item.size, 20) });
   }
   const order = {
     id: "SS-" + Date.now().toString(36).toUpperCase() + "-" + crypto.randomBytes(2).toString("hex").toUpperCase(),
