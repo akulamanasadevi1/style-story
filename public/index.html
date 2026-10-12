@@ -406,6 +406,58 @@ body{background:linear-gradient(180deg,#fffaf5 0%,#fff8f1 25%,#fff6fa 58%,#f7f2f
 .story .eyebrow{background:#fffaf0e8;border-color:#e8d2df}
 .story h2{ text-shadow:0 2px 0 #ffffff75 }
 
+
+/* Show-stopping editorial Our Story section */
+.story{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:
+    radial-gradient(ellipse at 0% 0%,#f4c5d8 0%,transparent 38%),
+    radial-gradient(ellipse at 100% 100%,#cbb9ee 0%,transparent 40%),
+    linear-gradient(125deg,#fff3e6 0%,#f9e1ec 38%,#efe7ff 72%,#fff1d9 100%)!important;
+  border:1px solid #e6c7d9!important;
+  box-shadow:0 26px 70px #5b345019,inset 0 1px 0 #ffffffd9!important;
+  padding:clamp(38px,6vw,82px)!important
+}
+.story:before{
+  content:"";position:absolute;z-index:-1;right:-110px;top:-180px;width:470px;height:470px;border-radius:50%;
+  border:1px solid #ffffffa8;
+  background:radial-gradient(circle at 36% 34%,#fff9f2c9 0%,#f3d9ee60 40%,#d9c4f000 72%);
+  box-shadow:0 0 0 18px #ffffff26,0 0 0 38px #ffffff1c,0 0 0 62px #ffffff12
+}
+.story:after{
+  content:"STYLE STORY";position:absolute;z-index:-1;right:2%;bottom:-.16em;
+  font-family:Georgia,serif;font-weight:bold;font-size:clamp(64px,12vw,175px);
+  letter-spacing:-.07em;line-height:1;color:#6e47780b;white-space:nowrap;pointer-events:none
+}
+.story>div:first-child{position:relative;padding:6px 0 16px}
+.story .eyebrow{
+  background:linear-gradient(120deg,#fffaf4,#fff0f6);border:1px solid #e8c7d9;
+  border-radius:999px;padding:10px 16px;box-shadow:0 6px 18px #743f6010;
+  color:#914566;letter-spacing:.19em
+}
+.story h2{font-size:clamp(43px,6vw,76px)!important;line-height:.99!important;letter-spacing:-.055em!important;margin:26px 0 18px!important;color:#392540!important}
+.story h2 i{display:inline-block;margin-top:7px;color:#a34470!important;font-weight:400}
+.story>div:first-child:after{content:"A LITTLE LOVE IN EVERY LOOK  ✦";font-size:10px;letter-spacing:.19em;color:#966d89;margin-top:26px}
+.story>div:last-child{
+  background:linear-gradient(145deg,#fffefbeF,#fff7fce8)!important;
+  border:1px solid #ffffff!important;border-radius:22px!important;
+  padding:clamp(24px,3.5vw,42px)!important;
+  box-shadow:0 20px 50px #5b345018,inset 0 1px 0 #ffffff!important;
+  backdrop-filter:blur(14px)
+}
+.story>div:last-child:before{font-size:82px;line-height:.55;color:#b9814c;margin-bottom:24px;text-shadow:0 4px 14px #bd8d4d22}
+.story p:first-of-type{font-family:Georgia,serif;font-size:clamp(17px,1.6vw,20px)!important;line-height:1.85!important;color:#57445f!important}
+.story p{font-size:14px;line-height:1.9;color:#78667c!important}
+.story .small{margin-top:22px;padding-top:18px;border-top:1px solid #ead9e7}
+.story .small strong{color:#8c3f65}
+@media(max-width:650px){
+ .story{padding:30px 19px!important;margin:14px 8px!important;border-radius:18px!important}
+ .story:before{width:300px;height:300px;right:-125px;top:-105px;box-shadow:0 0 0 12px #ffffff20,0 0 0 26px #ffffff12}
+ .story:after{font-size:64px;right:0;bottom:-.12em}
+ .story h2{font-size:46px!important;margin:22px 0 14px!important}
+ .story>div:last-child{padding:24px 19px!important;border-radius:16px!important}
+}
+
 </style>
 </head>
 <body>
