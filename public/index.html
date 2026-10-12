@@ -728,13 +728,51 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
 @media(max-width:900px){.nav{padding:14px 20px}.navlinks{gap:12px}.navlinks a{font-size:12px}.nav-icon{display:none}.hero{min-height:480px}}
 @media(max-width:650px){.nav{align-items:flex-start;flex-wrap:wrap;gap:10px}.brand{font-size:30px}.navlinks{width:100%;justify-content:space-between;gap:6px;flex-wrap:wrap}.navlinks .home-link{padding:8px 12px}.nav .pill{padding:9px 12px}.hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:34px 22px 24px}.hero-art{aspect-ratio:4/3;height:auto;min-height:0}.hero-art img{min-height:0;max-height:420px;object-fit:cover!important;object-position:center 24%!important}}
 
+
+/* Use the customer's exact uploaded reference artwork; invisible hotspots keep key controls interactive */
+.nav.exact-image-nav{position:absolute;inset:0 0 auto 0;width:100%;height:auto;aspect-ratio:1849/796;min-height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;z-index:10;display:block;pointer-events:none}
+.exact-image-hero{position:relative;width:100%;line-height:0;margin:0;padding:0;overflow:hidden;background:#fff3f0}
+.exact-banner{display:block;width:100%;height:auto;aspect-ratio:1849/796;object-fit:contain;object-position:top center}
+.hotspot{position:absolute;display:block;padding:0;margin:0;border:0;background:transparent;border-radius:999px;cursor:pointer;pointer-events:auto;text-decoration:none;z-index:12}
+.hotspot:focus-visible{outline:2px solid #9d456a;outline-offset:2px;background:#ffffff24}
+.home-hotspot{left:33.5%;top:2.2%;width:6.4%;height:7.7%}
+.shop-hotspot{left:41.2%;top:2.2%;width:5.7%;height:7.7%}
+.story-hotspot{left:48.8%;top:2.2%;width:7.8%;height:7.7%}
+.track-hotspot{left:56.1%;top:2.2%;width:9.1%;height:7.7%}
+.search-hotspot{left:77.5%;top:2.5%;width:3.1%;height:7.2%}
+.favourite-hotspot{left:81.2%;top:2.4%;width:3.1%;height:7.4%}
+.bag-hotspot{left:86.4%;top:2%;width:9.4%;height:8.2%;color:transparent}
+.image-cart-count{position:absolute;right:15%;top:28%;color:transparent;font-size:1px}
+.explore-hotspot{left:8.5%;top:69.5%;width:21.1%;height:9.2%;border-radius:8px}
+#navSearch{font-size:0}
+@media(max-width:650px){
+ .home-hotspot{left:33.5%;top:2%;width:7%;height:8%}
+ .shop-hotspot{left:41%;top:2%;width:7%;height:8%}
+ .story-hotspot{left:49%;top:2%;width:8%;height:8%}
+ .track-hotspot{left:57%;top:2%;width:10%;height:8%}
+ .search-hotspot{left:77%;top:2%;width:4%;height:8%}
+ .favourite-hotspot{left:81%;top:2%;width:4%;height:8%}
+ .bag-hotspot{left:86%;top:2%;width:10%;height:8%}
+ .explore-hotspot{left:8.5%;top:69.5%;width:21.1%;height:9.2%;border-radius:5px}
+}
+
 </style>
 </head>
 <body>
 <div class="topbar">A LITTLE STYLE, A LOT OF YOU · NEW LOOKS, EVERY DAY</div>
-<header class="nav"><a href="/" class="brand-link" aria-label="Style Story home"><div class="brand">style <span>story</span></div></a><nav class="navlinks"><a class="home-link" href="/">Home</a><a href="#shop">Shop <span aria-hidden="true">⌄</span></a><a href="#about">Our story</a><a href="/track.html">Track Order</a><button class="nav-icon" id="navSearch" type="button" aria-label="Search products">⌕</button><a class="nav-icon" href="#shop" aria-label="Browse favourites">♡</a><button class="pill" id="cartNav">♧ &nbsp;Bag (<span id="cartCount">0</span>)</button></nav></header>
-<main>
-<section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-line"></span>The everyday edit</div><h1>Wear your<br><em>own story.</em><span class="hero-heart">♡</span></h1><p>Thoughtful styles, pretty details and pieces that feel like you. Find something lovely for every version of yourself.</p><button class="primary" id="exploreCollection" type="button">EXPLORE THE COLLECTION <span aria-hidden="true">↗</span></button><div class="hero-benefits"><div class="hero-benefit"><span class="benefit-icon">♧</span><span><strong>Fast &amp; Reliable</strong><small>Delivery</small></span></div><div class="hero-benefit"><span class="benefit-icon">♡</span><span><strong>Secure Payments</strong><small>100% Safe</small></span></div><div class="hero-benefit"><span class="benefit-icon">♡</span><span><strong>Curated Styles</strong><small>Just for You</small></span></div></div></div><div class="hero-art"><img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1600&q=90" alt="Elegant Indian ethnic fashion for Style Story" loading="eager" fetchpriority="high"></div></section>
+<header class="nav exact-image-nav" aria-label="Store navigation">
+<a class="hotspot home-hotspot" href="/" aria-label="Home"></a>
+<a class="hotspot shop-hotspot" href="#shop" aria-label="Shop"></a>
+<a class="hotspot story-hotspot" href="#about" aria-label="Our story"></a>
+<a class="hotspot track-hotspot" href="/track.html" aria-label="Track order"></a>
+<button class="hotspot search-hotspot" id="navSearch" type="button" aria-label="Search products"></button>
+<a class="hotspot favourite-hotspot" href="#shop" aria-label="Browse favourites"></a>
+<button class="hotspot bag-hotspot" id="cartNav" aria-label="Shopping bag"> <span id="cartCount" class="image-cart-count">0</span> </button>
+</header>
+<section class="exact-image-hero" aria-label="Style Story — Wear Your Own Story">
+<img class="exact-banner" src="/images/Style%20Story_%20Wear%20Your%20Own%20Story.png" alt="Style Story pink and gold fashion storefront banner with the message Wear your own story" fetchpriority="high">
+<button class="hotspot explore-hotspot" id="exploreCollection" type="button" aria-label="Explore the collection"></button>
+</section>
 <section class="category-showcase" aria-label="Shop by category">
   <div class="category-heading"><div class="eyebrow">Find your look</div><h2>Shop by Category</h2><p>Pieces for every mood, moment and occasion.</p></div>
   <div class="category-tiles">
