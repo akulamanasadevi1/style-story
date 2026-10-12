@@ -346,6 +346,38 @@ body{background:linear-gradient(180deg,#fffaf5 0%,#fff8f1 25%,#fff6fa 58%,#f7f2f
  .footer{padding:30px 20px}
 }
 
+
+/* Highlight the Our Story section as a signature boutique brand moment */
+.story{
+  position:relative;isolation:isolate;display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(24px,5vw,70px);align-items:center;
+  padding:clamp(34px,5vw,72px)!important;
+  margin:28px clamp(10px,2vw,28px)!important;
+  border:1px solid #e8cddd!important;border-radius:24px!important;overflow:hidden;
+  background:linear-gradient(120deg,#fff0f5 0%,#fff7ed 48%,#f0e8ff 100%)!important;
+  box-shadow:0 20px 50px #58304b13
+}
+.story:before{content:"";position:absolute;width:370px;height:370px;right:-105px;top:-150px;border-radius:50%;background:radial-gradient(circle,#e6c6df85 0%,#f6e5f000 72%);z-index:-1}
+.story:after{content:"";position:absolute;width:260px;height:260px;left:-95px;bottom:-145px;border-radius:50%;background:radial-gradient(circle,#f4d8bd85 0%,#fff0e800 72%);z-index:-1}
+.story>div:first-child{padding:10px 0}
+.story .eyebrow{display:inline-flex;align-items:center;gap:9px;color:#9d5274;background:#fff9fc;border:1px solid #eed8e5;border-radius:99px;padding:9px 14px;letter-spacing:.16em}
+.story .eyebrow:before{content:"✦";font-size:12px;color:#bd8d4d}
+.story h2{font-family:Georgia,serif;font-size:clamp(38px,5vw,62px)!important;line-height:1.04;letter-spacing:-.045em;margin:20px 0 10px;color:#402b46!important}
+.story h2 i{color:#a34f70;font-weight:400}
+.story>div:first-child:after{content:"STYLE IS PERSONAL  ·  MADE WITH LOVE";display:block;font-family:inherit;font-size:10px;letter-spacing:.19em;color:#9a7890;line-height:1.6;margin-top:22px}
+.story>div:last-child{position:relative;background:#ffffffad;border:1px solid #ffffffd9;border-radius:17px;padding:clamp(22px,3vw,36px);box-shadow:0 10px 30px #633e5810;backdrop-filter:blur(8px)}
+.story>div:last-child:before{content:"“";display:block;font-family:Georgia,serif;font-size:58px;line-height:.7;color:#bd8d4d;margin-bottom:16px}
+.story p{font-size:14px;line-height:1.95;color:#716174!important;max-width:570px}
+.story p:first-of-type{font-size:15px;color:#5d4a61!important}
+.story p strong{color:#8e4565}
+.story .small{padding-top:14px;border-top:1px solid #ead9e6;margin-top:18px}
+@media(max-width:650px){
+ .story{grid-template-columns:1fr!important;gap:20px!important;margin:14px 8px!important;padding:27px 19px!important;border-radius:17px!important}
+ .story h2{font-size:42px!important;margin-top:17px}
+ .story>div:last-child{padding:22px 18px;border-radius:13px}
+ .story>div:first-child:after{font-size:9px}
+}
+
 </style>
 </head>
 <body>
