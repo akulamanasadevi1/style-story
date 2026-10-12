@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
+const webpush = require("web-push");
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -17,6 +18,12 @@ const uploadStorage = multer.diskStorage({ destination: (_req, _file, cb) => cb(
 const imageUpload = multer({ storage: uploadStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => { if (!/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype)) return cb(new Error("Please choose a JPG, PNG, WEBP or GIF image.")); cb(null, true); } });
 const PRODUCTS_FILE = path.join(DATA_DIR, "products.json");
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+const PUSH_SUBSCRIPTIONS_FILE = path.join(DATA_DIR, "push-subscriptions.json");
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || "";
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "";
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:admin@style-story.example";
+const pushConfigured = Boolean(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY);
+if (pushConfigured) webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 const SESSION_COOKIE = "style_story_admin";
 const SESSION_SECRET = process.env.SESSION_SECRET || "";
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
@@ -220,6 +227,47 @@ function validImageUrl(value) {
   } catch { return false; }
 }
 
+app.get("/api/push/public-key", (_req, res) => {
+  res.json({ enabled: pushConfigured, publicKey: pushConfigured ? VAPID_PUBLIC_KEY : "" });
+});
+app.post("/api/admin/push/subscribe", requireAdmin, (req, res) => {
+  if (!pushConfigured) return res.status(503).json({ error: "Push notifications are not configured yet. Add VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY in Render environment variables." });
+  const subscription = req.body?.subscription;
+  if (!subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) {
+    return res.status(400).json({ error: "Invalid browser push subscription." });
+  }
+  const subscriptions = readJson(PUSH_SUBSCRIPTIONS_FILE).filter(item => item.endpoint !== subscription.endpoint);
+  subscriptions.push({ ...subscription, savedAt: new Date().toISOString() });
+  writeJson(PUSH_SUBSCRIPTIONS_FILE, subscriptions);
+  res.json({ ok: true });
+});
+async function sendAdminPushAlert(order) {
+  if (!pushConfigured) {
+    console.log("[Push] VAPID keys not configured; browser push skipped.");
+    return;
+  }
+  const subscriptions = readJson(PUSH_SUBSCRIPTIONS_FILE);
+  if (!subscriptions.length) {
+    console.log("[Push] No admin devices subscribed yet.");
+    return;
+  }
+  const payload = JSON.stringify({
+    title: "New Style Story order!",
+    body: `${order.customerName} · ₹${Number(order.total).toFixed(2)} · ${order.id}`,
+    url: "/admin"
+  });
+  const results = await Promise.allSettled(subscriptions.map(subscription =>
+    webpush.sendNotification(subscription, payload).catch(async err => {
+      if (err.statusCode === 404 || err.statusCode === 410) {
+        const current = readJson(PUSH_SUBSCRIPTIONS_FILE).filter(item => item.endpoint !== subscription.endpoint);
+        writeJson(PUSH_SUBSCRIPTIONS_FILE, current);
+      }
+      throw err;
+    })
+  ));
+  const sent = results.filter(result => result.status === "fulfilled").length;
+  console.log(`[Push] Order ${order.id}: delivered to ${sent}/${subscriptions.length} subscribed device(s).`);
+}
 app.get("/api/config", (req, res) => res.json({
   shopName: SHOP_NAME,
   contactNumber: SHOP_CONTACT_NUMBER,
@@ -336,6 +384,7 @@ app.post("/api/checkout/upi-order", (req, res) => {
   const orders = readJson(ORDERS_FILE);
   orders.unshift(order);
   writeJson(ORDERS_FILE, orders);
+  sendAdminPushAlert(order).catch(err => console.error("[Push] Order alert error:", err.message));
   sendCustomerOrderSms(order).catch(err => console.error("[Customer order SMS] Alert error:", err.message));
   sendAdminSmsAlert(order).catch(err => console.error("[Admin SMS] Alert error:", err.message));
   sendWhatsAppOrderAlert(order).catch(err => console.error("[WhatsApp] Alert error:", err.message));
