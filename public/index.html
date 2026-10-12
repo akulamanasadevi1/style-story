@@ -271,6 +271,81 @@ body{background:linear-gradient(180deg,#fffaf5 0%,#fff8f1 25%,#fff6fa 58%,#f7f2f
  .product{border-radius:7px}
 }
 
+
+/* Creative editorial boutique layout */
+.brand{font-family:Georgia,serif;letter-spacing:-.07em}
+.topbar{font-size:10px;padding:11px 12px}
+.nav{padding-top:18px;padding-bottom:18px}
+.hero{grid-template-columns:1.02fr .98fr;min-height:490px;border-radius:0 0 26px 26px;margin:0 clamp(10px,2vw,28px);overflow:hidden;box-shadow:0 18px 45px #5b35500b}
+.hero-copy{padding:clamp(30px,5vw,76px);position:relative}
+.hero-copy:after{content:"SS";position:absolute;right:4%;bottom:0;font-family:Georgia,serif;font-size:clamp(100px,15vw,210px);line-height:.8;color:#a6537510;pointer-events:none}
+.hero .eyebrow{display:flex;align-items:center;gap:10px}
+.hero .eyebrow:before{content:"";width:28px;height:1px;background:#a34f70}
+.hero h1{font-size:clamp(48px,6vw,82px);line-height:.98;margin:22px 0}
+.hero p{font-size:15px;line-height:1.95;max-width:370px}
+.hero-art{min-height:490px;position:relative}
+.hero-art:before{width:70%;border-radius:48% 48% 4px 4px;border-color:#fff9}
+.hero-art:after{background:linear-gradient(0deg,#4b2a4518,transparent 50%),linear-gradient(125deg,#fff8e622,transparent 42%,#65452a25)}
+.category-showcase{padding-top:70px;padding-bottom:62px}
+.category-heading{text-align:left;max-width:1200px;margin:0 auto 28px}
+.category-heading h2{font-size:clamp(34px,4vw,48px);margin-top:10px}
+.category-heading p{max-width:460px;line-height:1.7}
+.category-tiles{grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.category-tile,.category-tile:nth-child(n){grid-column:span 2;min-height:205px!important;align-items:flex-start;text-align:left;padding:25px!important;border-radius:14px!important;justify-content:flex-end}
+.category-tile:nth-child(4){grid-column:2 / span 2}
+.category-tile:nth-child(5){grid-column:4 / span 2}
+.category-tile .cat-kicker{font-size:9px!important;letter-spacing:.2em!important}
+.category-tile strong{font-size:clamp(23px,2.5vw,32px)!important;max-width:100%}
+.category-tile small{font-size:12px!important}
+.category-tile .cat-arrow{top:18px!important;right:18px!important;width:36px;height:36px}
+.section{padding-top:76px;padding-bottom:76px}
+.section-head{margin-bottom:28px}
+.section h2{font-size:clamp(34px,4vw,46px)}
+.shop-tools{gap:12px;margin-top:30px;margin-bottom:18px}
+.search-box,.select-filter{min-height:56px}
+.filters{margin-bottom:24px}
+.grid{gap:20px}
+.product{border-radius:12px;position:relative}
+.product-image{aspect-ratio:4/5}
+.product-info{padding:17px}
+.product-info h3{font-size:15px}
+.product-info p{line-height:1.65}
+.product-actions{gap:9px}
+.discovery-section{border-radius:24px;margin:0 clamp(10px,2vw,28px);padding-left:clamp(18px,5vw,76px);padding-right:clamp(18px,5vw,76px)}
+.story{margin:20px clamp(10px,2vw,28px);padding-left:clamp(24px,5vw,76px);padding-right:clamp(24px,5vw,76px);border-radius:24px;overflow:hidden}
+.story h2{font-size:clamp(38px,5vw,58px);line-height:1.08}
+.story>div:first-child{position:relative}
+.story>div:first-child:after{content:"♡";font-family:Georgia,serif;font-size:110px;color:#a34f7018;display:block;line-height:.8;margin-top:25px}
+.footer{padding-top:42px;padding-bottom:42px}
+.cart-fab{padding:16px 22px}
+@media(max-width:900px){
+ .hero{min-height:410px}.hero-art{min-height:410px}
+ .category-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .category-tile,.category-tile:nth-child(n){grid-column:auto;min-height:180px!important}
+ .category-tile:nth-child(4),.category-tile:nth-child(5){grid-column:auto}
+ .section{padding-top:54px;padding-bottom:54px}
+}
+@media(max-width:650px){
+ .hero{grid-template-columns:1fr;margin:0 8px;border-radius:0 0 18px 18px}
+ .hero-copy{padding:38px 24px 28px}
+ .hero h1{font-size:clamp(48px,12vw,64px)}
+ .hero-art{min-height:0;aspect-ratio:4/3}
+ .category-showcase{padding:42px 16px}
+ .category-heading{text-align:left;margin-bottom:22px}
+ .category-tiles{gap:10px}
+ .category-tile,.category-tile:nth-child(n){min-height:155px!important;padding:17px 13px!important;border-radius:10px!important}
+ .category-tile strong{font-size:21px!important}
+ .section{padding:42px 16px}
+ .discovery-section{margin:0 8px;border-radius:16px;padding:36px 14px}
+ .story{margin:12px 8px;padding:30px 20px;border-radius:16px}
+ .story h2{font-size:39px}
+ .grid{gap:12px}
+ .product-info{padding:11px}
+ .product-info h3{font-size:13px}
+ .product-actions{grid-template-columns:1fr}
+ .footer{padding:30px 20px}
+}
+
 </style>
 </head>
 <body>
