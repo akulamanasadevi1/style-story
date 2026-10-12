@@ -852,6 +852,16 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
   .category-tile:last-child{grid-column:1/-1!important}
 }
 
+
+/* Mobile: remove the separate pink header and show the complete banner without cropping */
+@media(max-width:650px){
+  .mobile-announcement,.mobile-store-header,.mobile-nav-row{display:none!important}
+  .nav.exact-image-nav{display:block!important;position:absolute!important;inset:0 0 auto 0!important;width:100%!important;height:auto!important;aspect-ratio:1849/796!important;padding:0!important;margin:0!important;background:transparent!important;pointer-events:none!important;z-index:10!important}
+  .exact-image-hero{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:1849/796!important;overflow:hidden!important;position:relative!important;line-height:0!important}
+  .exact-banner{display:block!important;width:100%!important;height:100%!important;aspect-ratio:1849/796!important;max-height:none!important;object-fit:contain!important;object-position:top center!important}
+  .explore-hotspot{left:7.2%!important;top:68.4%!important;width:24%!important;height:12.2%!important;z-index:30!important}
+}
+
 </style>
 </head>
 <body>
