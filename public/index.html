@@ -706,11 +706,33 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
 #exploreCollection:focus-visible{outline:3px solid #c99b56!important;outline-offset:4px!important}
 @media(max-width:650px){.hero{grid-template-columns:1fr!important}.hero-copy{order:1}.hero-art{order:2;display:block!important;position:relative!important;min-height:0!important;aspect-ratio:4/3!important}.hero-art img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;object-fit:cover!important;object-position:center 28%!important}}
 
+
+/* Reference-inspired real storefront layout: all copy and controls stay interactive */
+.topbar{display:none!important}
+.nav{min-height:82px;padding:14px clamp(18px,5vw,76px);background:#fffaf5;border-bottom:1px solid #f0dfe1;box-shadow:none;backdrop-filter:none}
+.brand-link{color:inherit;text-decoration:none;flex-shrink:0}
+.brand{font-family:"Palatino Linotype",Palatino,Georgia,serif;font-size:clamp(28px,2.6vw,39px);font-style:italic;font-weight:700;letter-spacing:-.075em;color:#38253d}
+.brand span{color:#bd8d4b;font-style:italic;font-weight:600;letter-spacing:-.08em}
+.navlinks{gap:clamp(12px,2.2vw,34px)}
+.navlinks a{font-size:14px;font-weight:600;color:#4d3b50;white-space:nowrap}
+.navlinks .home-link{padding:12px 21px;border-radius:40px;background:#fae6e9;color:#a64f71}
+.nav-icon{border:0;background:transparent;color:#513d56;font-size:26px;line-height:1;cursor:pointer;padding:4px}
+.nav .pill{border:1px solid #efd9e5;background:#fff8fc;color:#774864;border-radius:40px;padding:13px 18px;font-size:14px}
+.hero{grid-template-columns:minmax(0,.96fr) minmax(0,1.04fr);min-height:clamp(500px,43.3vw,690px);margin:0;border:0;border-top:1px solid #f0dbe4;background:linear-gradient(120deg,#fff1eb 0%,#f8e2ec 52%,#e8dcf4 100%);box-shadow:none}
+.hero-copy{padding:clamp(30px,5.2vw,86px);padding-bottom:clamp(28px,3.8vw,56px)}
+.hero h1{font-size:clamp(48px,5.6vw,82px);line-height:1.03;letter-spacing:-.065em}
+.hero p{max-width:510px;line-height:1.75;font-size:clamp(14px,1.18vw,18px)}
+.hero-art{background:linear-gradient(145deg,#f8e4eb,#ded0ee)}
+.hero-art img{object-fit:cover!important;object-position:center 24%!important}
+#navSearch{font-family:Arial,sans-serif}
+@media(max-width:900px){.nav{padding:14px 20px}.navlinks{gap:12px}.navlinks a{font-size:12px}.nav-icon{display:none}.hero{min-height:480px}}
+@media(max-width:650px){.nav{align-items:flex-start;flex-wrap:wrap;gap:10px}.brand{font-size:30px}.navlinks{width:100%;justify-content:space-between;gap:6px;flex-wrap:wrap}.navlinks .home-link{padding:8px 12px}.nav .pill{padding:9px 12px}.hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:34px 22px 24px}.hero-art{aspect-ratio:4/3;height:auto;min-height:0}.hero-art img{min-height:0;max-height:420px;object-fit:cover!important;object-position:center 24%!important}}
+
 </style>
 </head>
 <body>
 <div class="topbar">A LITTLE STYLE, A LOT OF YOU · NEW LOOKS, EVERY DAY</div>
-<header class="nav"><a href="/" style="color:inherit;text-decoration:none"><div class="brand">style <span>story</span></div></a><nav class="navlinks"><a href="#shop">Shop</a><a href="#about">Our story</a><a href="/track.html">Track Order</a><button class="pill" id="cartNav">Bag (<span id="cartCount">0</span>)</button></nav></header>
+<header class="nav"><a href="/" class="brand-link" aria-label="Style Story home"><div class="brand">style <span>story</span></div></a><nav class="navlinks"><a class="home-link" href="/">Home</a><a href="#shop">Shop <span aria-hidden="true">⌄</span></a><a href="#about">Our story</a><a href="/track.html">Track Order</a><button class="nav-icon" id="navSearch" type="button" aria-label="Search products">⌕</button><a class="nav-icon" href="#shop" aria-label="Browse favourites">♡</a><button class="pill" id="cartNav">♧ &nbsp;Bag (<span id="cartCount">0</span>)</button></nav></header>
 <main>
 <section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-line"></span>The everyday edit</div><h1>Wear your<br><em>own story.</em><span class="hero-heart">♡</span></h1><p>Thoughtful styles, pretty details and pieces that feel like you. Find something lovely for every version of yourself.</p><button class="primary" id="exploreCollection" type="button">EXPLORE THE COLLECTION <span aria-hidden="true">↗</span></button><div class="hero-benefits"><div class="hero-benefit"><span class="benefit-icon">♧</span><span><strong>Fast &amp; Reliable</strong><small>Delivery</small></span></div><div class="hero-benefit"><span class="benefit-icon">♡</span><span><strong>Secure Payments</strong><small>100% Safe</small></span></div><div class="hero-benefit"><span class="benefit-icon">♡</span><span><strong>Curated Styles</strong><small>Just for You</small></span></div></div></div><div class="hero-art"><img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1600&q=90" alt="Elegant Indian ethnic fashion for Style Story" loading="eager" fetchpriority="high"></div></section>
 <section class="category-showcase" aria-label="Shop by category">
@@ -748,6 +770,7 @@ function renderProducts(){const list=filteredProducts();$("#productCount").textC
 function renderDiscoverySections(){const byNewest=[...products].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));const newest=byNewest.slice(0,4);$("#newArrivalProducts").innerHTML=newest.length?newest.map(productCard).join(""):'<div class="empty">New arrivals will appear here as you add products.</div>';bindProductCards($("#newArrivalProducts"))}
 
 $("#exploreCollection").addEventListener("click",()=>{$("#shop").scrollIntoView({behavior:"smooth",block:"start"});});
+$("#navSearch").addEventListener("click",()=>{$("#searchInput")?.focus();$("#shop").scrollIntoView({behavior:"smooth",block:"start"});});
 $("#productSearch").addEventListener("input",renderProducts);$("#priceFilter").addEventListener("change",renderProducts);$("#sizeFilter").addEventListener("change",renderProducts);$("#categoryFilter").addEventListener("change",e=>setCategory(e.target.value));
 function openDetails(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;$("#detailContent").innerHTML=`<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:12px"><div style="background:#f1e6e2;min-height:240px"><img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" style="width:100%;height:100%;max-height:430px;object-fit:cover" onerror="this.style.display='none'"></div><div><div class="eyebrow">${esc(p.category||"Style")}</div><h2 style="margin-top:10px">${esc(p.name)}</h2><p class="muted">${esc(p.description||"Made for your everyday moments.")}</p><p style="font-size:22px;font-weight:700">${money(p.price)}</p><p class="small">${Number(p.stock)>0?`${p.stock} available`:"Out of stock"}</p>${p.sizes?.length?`<div class="field"><label for="detailSize">Choose size</label><select id="detailSize">${p.sizes.map(s=>`<option>${esc(s)}</option>`).join("")}</select></div>`:""}<div class="field"><label for="detailQty">Quantity</label><input id="detailQty" type="number" min="1" max="${Math.max(1,Math.min(10,Number(p.stock)||1))}" value="1"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="primary" id="detailAdd" style="width:100%" ${p.stock<1?"disabled":""}>ADD TO BAG</button><button class="buy-now" id="detailBuy" ${p.stock<1?"disabled":""}>BUY NOW ↗</button></div></div></div>`;const addCurrent=()=>{const qty=Math.max(1,Math.min(Number($("#detailQty").value)||1,Number(p.stock)||1,10));const size=$("#detailSize")?.value||"";const found=cart.find(x=>String(x.id)===String(id)&&x.size===size);if(found){found.quantity=Math.min(Number(p.stock)||1,found.quantity+qty)}else cart.push({id,quantity:qty,size});renderCart();return true};$("#detailAdd").onclick=()=>{addCurrent();hide("#detailOverlay");toast("Added to your bag.")};$("#detailBuy").onclick=()=>{addCurrent();hide("#detailOverlay");hide("#cartOverlay");show("#checkoutOverlay")};show("#detailOverlay")}
 function buyNow(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;if(p.stock<1)return toast("This item is currently out of stock.");cart=[{id,quantity:1,size:p.sizes?.[0]||""}];renderCart();show("#checkoutOverlay")}
