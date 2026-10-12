@@ -9,8 +9,9 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
-const DATA_DIR = path.join(ROOT, "data");
-const UPLOAD_DIR = path.join(PUBLIC_DIR, "uploads");
+const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(ROOT, "data");
+// When DATA_DIR points to Render's persistent disk, keep uploaded product photos there too.
+const UPLOAD_DIR = process.env.DATA_DIR ? path.join(DATA_DIR, "uploads") : path.join(PUBLIC_DIR, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 const uploadStorage = multer.diskStorage({ destination: (_req, _file, cb) => cb(null, UPLOAD_DIR), filename: (_req, file, cb) => { const ext = (path.extname(file.originalname || "").toLowerCase().match(/^\.(jpg|jpeg|png|webp|gif)$/) || [".jpg"])[0]; cb(null, Date.now() + "-" + crypto.randomBytes(5).toString("hex") + ext); } });
 const imageUpload = multer({ storage: uploadStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => { if (!/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype)) return cb(new Error("Please choose a JPG, PNG, WEBP or GIF image.")); cb(null, true); } });
@@ -42,6 +43,8 @@ app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(PUBLIC_DIR, { extensions: ["html"] }));
+// Serve uploaded product images from the persistent disk when DATA_DIR is configured.
+app.use("/uploads", express.static(UPLOAD_DIR, { fallthrough: true }));
 
 function readJson(file) {
   try {
