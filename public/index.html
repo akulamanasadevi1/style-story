@@ -756,6 +756,33 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
  .explore-hotspot{left:7.2%;top:68.4%;width:24%;height:12.2%;border-radius:5px;z-index:30;pointer-events:auto;cursor:pointer;touch-action:manipulation}
 }
 
+
+/* Mobile polish: give the banner room, keep category cards balanced, and stop the floating bag covering content */
+@media(max-width:650px){
+  .exact-image-hero{width:100%;overflow:hidden}
+  .exact-banner{width:100%;height:auto;object-fit:contain;display:block}
+  .category-showcase{padding:30px 16px 28px}
+  .category-heading{text-align:left;margin:0 0 20px}
+  .category-heading .eyebrow{font-size:10px;letter-spacing:.18em}
+  .category-heading h2{font-size:clamp(29px,7.8vw,38px);line-height:1.12;margin:8px 0 10px;letter-spacing:-.035em}
+  .category-heading p{font-size:14px;line-height:1.5;max-width:330px}
+  .category-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .category-tile,.category-tile:nth-child(n){min-width:0;min-height:132px;padding:16px 10px;border-radius:14px;gap:8px;box-shadow:0 5px 16px #56324c0a}
+  .category-tile strong{font-size:clamp(18px,5vw,22px);overflow-wrap:anywhere}
+  .category-tile small{font-size:11px}
+  .category-tile .cat-kicker{font-size:8px;letter-spacing:.13em}
+  .category-tile .cat-arrow{position:absolute;right:10px;top:10px;font-size:16px}
+  .section{padding:34px 16px}
+  .section h2{font-size:clamp(27px,7vw,34px);line-height:1.15}
+  .section-head{gap:8px;margin-bottom:18px}
+  .shop-tools{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .search-box{grid-column:1/-1}
+  .select-filter{min-width:0}
+  .select-filter select{font-size:12px}
+  .cart-fab{right:12px;bottom:14px;padding:11px 15px;font-size:13px;border-radius:14px;box-shadow:0 6px 20px #3523172a}
+  .modal{padding:18px;max-height:88vh}
+}
+
 </style>
 </head>
 <body>
