@@ -830,10 +830,35 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
   .section#newArrivals{padding-top:36px!important}
 }
 
+
+/* Reference-inspired mobile header: real, readable navigation above the fashion banner */
+.mobile-announcement,.mobile-store-header,.mobile-nav-row{display:none}
+@media(max-width:650px){
+  .mobile-announcement{display:block!important;background:#fff8fc;color:#51364c;text-align:center;padding:12px 10px;font-size:13px;border-bottom:1px solid #f0e1e9}
+  .mobile-store-header{display:flex!important;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;background:#ed1686;color:white}
+  .mobile-store-logo{font-family:Georgia,serif;font-style:italic;font-size:25px;font-weight:700;letter-spacing:-1.4px;color:#fff;white-space:nowrap}
+  .mobile-store-logo span{color:#ffe4b9}
+  .mobile-header-actions{display:flex;align-items:center;gap:13px}
+  .mobile-header-actions a,.mobile-header-actions button{display:grid;place-items:center;color:#fff;text-decoration:none;background:transparent;border:0;padding:2px;font-size:22px;line-height:1}
+  .mobile-nav-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:9px 8px;background:#fff8fc;border-bottom:1px solid #f0e1e9}
+  .mobile-nav-row a{display:block;text-align:center;text-decoration:none;color:#4b3349;font-size:12px;font-weight:650;padding:9px 2px;border-radius:22px;white-space:nowrap}
+  .mobile-nav-row a:first-child{background:#f9e1eb;color:#a64f71}
+  .nav.exact-image-nav{display:none!important}
+  .exact-image-hero{aspect-ratio:1.35/1;max-height:430px;line-height:0;position:relative}
+  .exact-banner{width:100%;height:100%;object-fit:cover;object-position:center 32%;aspect-ratio:auto}
+  .explore-hotspot{left:7.2%;top:68.4%;width:24%;height:12.2%}
+  .category-heading{text-align:center!important}
+  .category-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .category-tile:last-child{grid-column:1/-1!important}
+}
+
 </style>
 </head>
 <body>
 <div class="topbar">A LITTLE STYLE, A LOT OF YOU · NEW LOOKS, EVERY DAY</div>
+<div class="mobile-announcement">All India Shipping in 5–6 days</div>
+<div class="mobile-store-header"><a href="/" class="mobile-store-logo">style <span>story</span></a><div class="mobile-header-actions"><button type="button" id="mobileSearch" aria-label="Search">⌕</button><a href="#shop" aria-label="Favourites">♡</a><button type="button" id="mobileCart" aria-label="Shopping bag">♧</button></div></div>
+<nav class="mobile-nav-row" aria-label="Mobile navigation"><a href="/">Home</a><a href="#shop">Shop⌄</a><a href="#about">Our story</a><a href="/track.html">Track order</a></nav>
 <header class="nav exact-image-nav" aria-label="Store navigation">
 <a class="hotspot home-hotspot" href="/" aria-label="Home"></a>
 <a class="hotspot shop-hotspot" href="#shop" aria-label="Shop"></a>
@@ -882,7 +907,9 @@ function renderProducts(){const list=filteredProducts();$("#productCount").textC
 function renderDiscoverySections(){const byNewest=[...products].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));const newest=byNewest.slice(0,4);$("#newArrivalProducts").innerHTML=newest.length?newest.map(productCard).join(""):'<div class="empty">New arrivals will appear here as you add products.</div>';bindProductCards($("#newArrivalProducts"))}
 
 $("#exploreCollection").addEventListener("click",()=>{document.querySelector("#shop")?.scrollIntoView({behavior:"smooth",block:"start"});});
-$("#navSearch").addEventListener("click",()=>{$("#searchInput")?.focus();$("#shop").scrollIntoView({behavior:"smooth",block:"start"});});
+$("#navSearch").addEventListener("click",()=>{$("#productSearch")?.focus();$("#shop").scrollIntoView({behavior:"smooth",block:"start"});});
+$("#mobileSearch")?.addEventListener("click",()=>{$("#productSearch")?.focus();$("#shop").scrollIntoView({behavior:"smooth",block:"start"});});
+$("#mobileCart")?.addEventListener("click",()=>{renderCart();show("#cartOverlay")});
 $("#productSearch").addEventListener("input",renderProducts);$("#priceFilter").addEventListener("change",renderProducts);$("#sizeFilter").addEventListener("change",renderProducts);$("#categoryFilter").addEventListener("change",e=>setCategory(e.target.value));
 function openDetails(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;$("#detailContent").innerHTML=`<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:12px"><div style="background:#f1e6e2;min-height:240px"><img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" style="width:100%;height:100%;max-height:430px;object-fit:cover" onerror="this.style.display='none'"></div><div><div class="eyebrow">${esc(p.category||"Style")}</div><h2 style="margin-top:10px">${esc(p.name)}</h2><p class="muted">${esc(p.description||"Made for your everyday moments.")}</p><p style="font-size:22px;font-weight:700">${money(p.price)}</p><p class="small">${Number(p.stock)>0?`${p.stock} available`:"Out of stock"}</p>${p.sizes?.length?`<div class="field"><label for="detailSize">Choose size</label><select id="detailSize">${p.sizes.map(s=>`<option>${esc(s)}</option>`).join("")}</select></div>`:""}<div class="field"><label for="detailQty">Quantity</label><input id="detailQty" type="number" min="1" max="${Math.max(1,Math.min(10,Number(p.stock)||1))}" value="1"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="primary" id="detailAdd" style="width:100%" ${p.stock<1?"disabled":""}>ADD TO BAG</button><button class="buy-now" id="detailBuy" ${p.stock<1?"disabled":""}>BUY NOW ↗</button></div></div></div>`;const addCurrent=()=>{const qty=Math.max(1,Math.min(Number($("#detailQty").value)||1,Number(p.stock)||1,10));const size=$("#detailSize")?.value||"";const found=cart.find(x=>String(x.id)===String(id)&&x.size===size);if(found){found.quantity=Math.min(Number(p.stock)||1,found.quantity+qty)}else cart.push({id,quantity:qty,size});renderCart();return true};$("#detailAdd").onclick=()=>{addCurrent();hide("#detailOverlay");toast("Added to your bag.")};$("#detailBuy").onclick=()=>{addCurrent();hide("#detailOverlay");hide("#cartOverlay");show("#checkoutOverlay")};show("#detailOverlay")}
 function buyNow(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;if(p.stock<1)return toast("This item is currently out of stock.");cart=[{id,quantity:1,size:p.sizes?.[0]||""}];renderCart();show("#checkoutOverlay")}
