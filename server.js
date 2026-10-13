@@ -366,6 +366,8 @@ app.patch("/api/admin/orders/:id", requireAdmin, requireSupabase, asyncRoute(asy
   if (!order) return res.status(404).json({ error: "Order not found." });
   const previousStatus = order.status;
   order.status = status;
+  if (["PAID", "PROCESSING", "SHIPPED", "DELIVERED"].includes(status)) order.paymentStatus = "PAID";
+  else if (status === "PENDING_PAYMENT") order.paymentStatus = "PENDING";
   order.updatedAt = new Date().toISOString();
   await saveRecord("orders", order);
   if (previousStatus !== status) {
