@@ -4,36 +4,23 @@
 :root{--ink:#342725;--muted:#7d706b;--line:#eaded8;--cream:#fbf7f3;--gold:#b18a61;--rose:#a65f63}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Arial,sans-serif}header{padding:18px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:14px}a{color:inherit}.brand{font:26px Georgia,serif;letter-spacing:1px;text-decoration:none}.nav{display:flex;gap:16px;align-items:center;text-decoration:none}.wrap{max-width:1120px;margin:30px auto;padding:0 18px}.crumb{color:var(--muted);font-size:13px;margin-bottom:22px}.product{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:clamp(24px,5vw,64px);align-items:start}.photo{background:var(--cream);border-radius:18px;overflow:hidden;min-height:350px;display:grid;place-items:center}.photo img{width:100%;max-height:680px;object-fit:contain;display:block}.details{padding:10px 0}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:11px;color:var(--gold)}h1{font:clamp(30px,4vw,44px) Georgia,serif;line-height:1.12;margin:12px 0}.price{font-size:25px;font-weight:700;margin:16px 0}.price-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}.price-line .price{margin:0}.old-price{font-size:16px;color:#8a7d78;text-decoration:line-through}.offer-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#c51f4b,#8d1034);color:#fff;border:1px solid #ffb4c8;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;letter-spacing:.04em;box-shadow:0 4px 12px #b51d4829;text-transform:uppercase}.desc{color:var(--muted);line-height:1.7;white-space:pre-line}.stock{font-size:13px;color:#557653}.field{margin:20px 0}.field label{display:block;font-size:13px;margin-bottom:8px}.field select,.field input{width:100%;padding:13px;border:1px solid var(--line);border-radius:10px;background:white;font:inherit}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}.btn{border-radius:999px;padding:15px 12px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-weight:700;cursor:pointer}.btn.secondary{background:white;color:var(--ink)}.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:18px}.err{padding:40px 0;text-align:center}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:12px 18px;border-radius:999px;display:none;max-width:90%}@media(max-width:720px){.product{grid-template-columns:1fr;gap:20px}.photo{min-height:260px}.photo img{max-height:480px}.wrap{margin:20px auto}.actions{grid-template-columns:1fr}.brand{font-size:22px}}
 
 
-/* Refined luxury Buy Now CTA */
+
+/* Elegant jewel-plum Buy Now CTA */
 .buy-now{
-  position:relative!important;
-  overflow:hidden!important;
-  background:linear-gradient(135deg,#171717 0%,#29231d 52%,#171717 100%)!important;
-  border:1px solid #c6a66a!important;
-  color:#fffaf0!important;
-  border-radius:999px!important;
-  box-shadow:0 5px 0 #0b0b0b,0 8px 18px rgba(30,22,14,.18)!important;
-  letter-spacing:.045em!important;
-  font-weight:800!important;
-}
-.buy-now::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.13) 48%,transparent 72%);
-  transform:translateX(-120%);
-  transition:transform .45s ease;
-  pointer-events:none;
+  position:relative!important;overflow:hidden!important;
+  background:linear-gradient(135deg,#8f3157 0%,#b84f77 52%,#8f3157 100%)!important;
+  border:1px solid #dca0b5!important;color:#fff!important;
+  border-radius:9px!important;font-weight:800!important;letter-spacing:.035em!important;
+  box-shadow:0 5px 13px rgba(143,49,87,.22)!important;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease!important;
 }
 .buy-now:hover{
-  background:linear-gradient(135deg,#3a3023 0%,#171717 100%)!important;
-  border-color:#e5cb91!important;
-  transform:translateY(-2px)!important;
-  box-shadow:0 5px 0 #0b0b0b,0 12px 22px rgba(30,22,14,.23)!important;
+  background:linear-gradient(135deg,#a83d68 0%,#cc648b 52%,#a83d68 100%)!important;
+  border-color:#efc1d0!important;transform:translateY(-2px)!important;
+  box-shadow:0 8px 18px rgba(143,49,87,.28)!important;
 }
-.buy-now:hover::after{transform:translateX(120%)}
-.buy-now:active{transform:translateY(1px)!important;box-shadow:0 2px 0 #0b0b0b!important}
-.buy-now:focus-visible{outline:2px solid #c6a66a!important;outline-offset:3px}
+.buy-now:active{transform:translateY(0)!important}
+.buy-now:focus-visible{outline:2px solid #c76d91!important;outline-offset:3px}
 </style></head><body><header><a class="brand" href="/">STYLE STORY</a><nav class="nav"><a href="/track.html">Track Order</a><a href="/">← Shop</a></nav></header>
 <main class="wrap"><div class="crumb"><a href="/">Home</a> / Product details</div><div id="content"><p>Loading product…</p></div></main><div class="toast" id="toast"></div>
 <script>
