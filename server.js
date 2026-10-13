@@ -68,21 +68,24 @@ async function deleteRecord(table, id) {
 async function readProducts() {
   const products = await readRecords("products");
   const normalized = [];
-  for (const source of products) {
+  // Rotate realistic-looking discounts across the catalogue so adjacent products
+  // don't all show the same offer. These are automatically assigned promotions.
+  const discounts = [12, 15, 18, 20, 23, 26, 29, 32, 35, 38, 40];
+  for (let index = 0; index < products.length; index++) {
+    const source = products[index];
     let product = { ...source, id: String(source.id ?? source.productId ?? source.product_id ?? source.sku ?? crypto.randomUUID()) };
     const price = Number(product.price);
     const mrp = Number(product.compareAtPrice);
     if (Number.isFinite(price) && price > 0) {
-      // Give each product a stable, different offer (20%, 25%, 30%, 35% or 40%).
-      // If an earlier automatic 35% offer was already saved, recalculate from its stored MRP.
-      let hash = 0;
-      for (const char of String(product.id || product.name || "style")) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-      const discounts = [20, 25, 30, 35, 40];
-      const discount = discounts[hash % discounts.length];
-      const looksLikeEarlierAutoOffer = Number.isFinite(mrp) && mrp > price && Math.abs(price / mrp - 0.65) < 0.006;
+      const previousAutoDiscounts = [20, 25, 30, 35, 40];
+      const oldAutoDiscount = Number.isFinite(mrp) && mrp > price
+        ? previousAutoDiscounts.find(d => Math.abs(price / mrp - (1 - d / 100)) < 0.006)
+        : null;
       const needsOffer = !(Number.isFinite(mrp) && mrp > price);
-      if (needsOffer || looksLikeEarlierAutoOffer) {
+      const shouldRefreshPreviousAutoOffer = oldAutoDiscount !== undefined && oldAutoDiscount !== null;
+      if (needsOffer || shouldRefreshPreviousAutoOffer) {
         const originalPrice = Math.round((needsOffer ? price : mrp) * 100) / 100;
+        const discount = discounts[index % discounts.length];
         const offerPrice = Math.max(1, Math.round(originalPrice * (1 - discount / 100) * 100) / 100);
         product = { ...product, price: offerPrice, compareAtPrice: originalPrice };
         await saveRecord("products", product);
