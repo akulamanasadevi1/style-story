@@ -11,7 +11,7 @@ const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
 const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const SUPABASE_SERVICE_ROLE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
 const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "product-images";
 const supabase = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
 const imageUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => { if (!/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype)) return cb(new Error("Please choose a JPG, PNG, WEBP or GIF image.")); cb(null, true); } });
@@ -401,7 +401,8 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`${SHOP_NAME} running on http://localhost:${PORT}`);
-  console.log(supabase ? "Product/order data is stored in Supabase." : "WARNING: Supabase is not configured; database routes will be unavailable.");
+  console.log("[SUPABASE_CONFIG]", JSON.stringify({ urlPresent: Boolean(SUPABASE_URL), serviceRoleKeyPresent: Boolean(SUPABASE_SERVICE_ROLE_KEY), serviceRoleKeyLength: SUPABASE_SERVICE_ROLE_KEY.length, bucket: STORAGE_BUCKET }));
+  console.log(supabase ? "Supabase client initialized; database connection will be checked on first request." : "WARNING: Supabase is not configured; database routes will be unavailable.");
   if (!SESSION_SECRET || SESSION_SECRET.length < 32) console.warn("WARNING: SESSION_SECRET must be at least 32 characters. Set it in .env.");
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD) console.warn("WARNING: Set ADMIN_EMAIL and ADMIN_PASSWORD in .env before admin login.");
   if (!supabase) console.warn("WARNING: Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Render Environment.");
