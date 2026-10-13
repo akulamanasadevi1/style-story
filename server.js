@@ -396,6 +396,15 @@ app.use((err, req, res, next) => {
     status: err && err.status
   }));
   if (res.headersSent) return next(err);
+  if (req.path.startsWith("/api/admin/")) {
+    return res.status(500).json({
+      error: "Admin request failed. See diagnostic fields below.",
+      diagnostic: err && err.message ? err.message : String(err),
+      code: err && err.code ? err.code : undefined,
+      details: err && err.details ? err.details : undefined,
+      hint: err && err.hint ? err.hint : undefined
+    });
+  }
   res.status(500).json({ error: "Internal server error. Check Render Runtime Logs for STYLE_STORY_ERROR_LOGGING." });
 });
 
