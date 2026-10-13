@@ -43,12 +43,18 @@ function requireSupabase(req, res, next) {
 }
 async function readRecords(table) {
   const { data, error } = await supabase.from(table).select("id,data,created_at").order("created_at", { ascending: false });
-  if (error) throw error;
+  if (error) {
+    console.error("[SUPABASE_READ_ERROR]", JSON.stringify({ table, message: error.message, code: error.code, details: error.details, hint: error.hint, status: error.status }));
+    throw error;
+  }
   return (data || []).map(row => row.data).filter(Boolean);
 }
 async function saveRecord(table, record) {
   const { error } = await supabase.from(table).upsert({ id: String(record.id), data: record, created_at: record.createdAt || new Date().toISOString() }, { onConflict: "id" });
-  if (error) throw error;
+  if (error) {
+    console.error("[SUPABASE_WRITE_ERROR]", JSON.stringify({ table, message: error.message, code: error.code, details: error.details, hint: error.hint, status: error.status }));
+    throw error;
+  }
 }
 async function deleteRecord(table, id) {
   const { error } = await supabase.from(table).delete().eq("id", String(id));
