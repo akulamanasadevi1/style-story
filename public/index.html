@@ -864,25 +864,27 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
 
 
 
-/* Final mobile polish: readable product cards and balanced one-item layouts */
-@media(max-width:650px){
+/* Final responsive storefront layout for phones and narrow tablets */
+@media(max-width:800px){
   html,body{max-width:100%;overflow-x:hidden}
-  .section#shop .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start}
-  .section#shop .product{width:100%;min-width:0}
-  .section#shop .product-image{aspect-ratio:3/4}
-  .section#shop .product-info{padding:10px!important}
-  .section#shop .product-info h3{font-size:13px!important;overflow-wrap:anywhere}
-  .section#shop .price-row{align-items:flex-start;flex-wrap:wrap}
-  .section#shop .add{font-size:11px!important;padding:8px 7px!important}
-  .section#shop .product-actions{gap:6px!important}
-  .section#shop .details-btn,.section#shop .buy-now{font-size:11px!important;padding:9px 5px!important;min-width:0}
-  .section#shop .grid:has(.product:only-child){grid-template-columns:minmax(0,260px)!important;justify-content:center!important}
+  #shop .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start}
+  #shop .product{width:100%;min-width:0}
+  #shop .product-image{aspect-ratio:3/4}
+  #shop .product-info{padding:10px!important}
+  #shop .product-info h3{font-size:13px!important;overflow-wrap:anywhere}
+  #shop .price-row{align-items:flex-start;flex-wrap:wrap}
+  #shop .add{font-size:11px!important;padding:8px 7px!important}
+  #shop .product-actions{gap:6px!important}
+  #shop .details-btn,#shop .buy-now{font-size:11px!important;padding:9px 5px!important;min-width:0}
+  #shop .grid:has(.product:only-child){grid-template-columns:minmax(0,280px)!important;justify-content:center!important}
+  .shop-tools{grid-template-columns:minmax(0,1fr) repeat(3,minmax(0,.7fr))!important}
+  .search-box{min-width:0}
 }
-@media(max-width:380px){
-  .section#shop .shop-tools{grid-template-columns:1fr 1fr!important}
-  .section#shop .search-box{grid-column:1/-1!important}
-  .section#shop .filters{gap:6px!important}
-  .section#shop .filter{padding:8px 10px!important}
+@media(max-width:480px){
+  #shop .shop-tools{grid-template-columns:1fr 1fr!important}
+  #shop .search-box{grid-column:1/-1!important}
+  #shop .filters{gap:6px!important}
+  #shop .filter{padding:8px 10px!important}
 }
 
 </style>
