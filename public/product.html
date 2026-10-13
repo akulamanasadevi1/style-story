@@ -21,6 +21,35 @@
 }
 .buy-now:active{transform:translateY(0)!important}
 .buy-now:focus-visible{outline:2px solid #c76d91!important;outline-offset:3px}
+
+/* STYLE STORY — product detail page theme */
+:root{--ink:#35263a!important;--muted:#796b80!important;--line:#eadced!important;--cream:#fff8f5!important;--gold:#a77bb7!important;--rose:#b64f83!important}
+body{background:radial-gradient(ellipse at 8% 4%,#fbe2ef 0,transparent 30%),radial-gradient(ellipse at 95% 12%,#eee5ff 0,transparent 34%),linear-gradient(180deg,#fffaf7,#fff7fb)!important;color:#35263a!important}
+header{background:#fffaf7ed!important;border-color:#eadced!important;box-shadow:0 8px 28px #61395b0b!important}
+.brand{color:#49324f!important}
+.nav{color:#75466f!important}
+.wrap{max-width:1180px!important}
+.crumb{color:#8c7892!important}
+.product{background:linear-gradient(135deg,#fffdfb,#fff5fa 60%,#f8f2ff)!important;border:1px solid #eadced!important;border-radius:24px!important;padding:clamp(18px,3vw,34px)!important;box-shadow:0 18px 50px #734a7412!important}
+.photo{background:linear-gradient(145deg,#fceaf2,#eee5ff)!important;border-radius:20px!important;border:1px solid #f0deed!important}
+.eyebrow{color:#a04e8c!important}
+h1{color:#39243e!important}
+.price{color:#38263e!important}
+.old-price{color:#8d8191!important}
+.offer-badge{background:linear-gradient(115deg,#c52c72,#8d328d)!important;border-color:#f2b9d5!important;color:#fff!important}
+.stock{color:#8b5380!important}
+.desc{color:#76657c!important;line-height:1.8!important}
+.field label{color:#725a78!important}
+.field select,.field input{border:1px solid #e6d6e9!important;border-radius:10px!important;background:#fff!important}
+.btn{background:linear-gradient(120deg,#b64f83,#8e4a9e)!important;border:1px solid #b25d9e!important;color:#fff!important;border-radius:10px!important;box-shadow:0 6px 16px #a14a8526!important;font-weight:750!important}
+.btn:hover{background:linear-gradient(120deg,#ca6094,#a45bb3)!important;transform:translateY(-1px)}
+.btn.secondary{background:#fff7fb!important;border-color:#d9b9dc!important;color:#8c477f!important;box-shadow:none!important}
+.btn.secondary:hover{background:#f9eaf5!important}
+.note{background:#fff4fa!important;border:1px solid #efd9eb!important;border-radius:12px!important;padding:14px!important;color:#795f7d!important;line-height:1.7!important}
+.err{background:#fff2f8!important;border-color:#edcfe4!important;border-radius:16px!important}
+a{color:#91477f}
+@media(max-width:650px){.product{padding:14px!important;border-radius:18px!important}.photo{border-radius:14px!important}}
+
 </style></head><body><header><a class="brand" href="/">STYLE STORY</a><nav class="nav"><a href="/track.html">Track Order</a><a href="/">← Shop</a></nav></header>
 <main class="wrap"><div class="crumb"><a href="/">Home</a> / Product details</div><div id="content"><p>Loading product…</p></div></main><div class="toast" id="toast"></div>
 <script>
