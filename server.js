@@ -333,17 +333,17 @@ app.post("/api/checkout/upi-order", requireSupabase, asyncRoute(async (req, res)
   res.status(201).json({ order, upiLink: `upi://pay?${params.toString()}` });
 }));
 app.post("/api/track-order", requireSupabase, asyncRoute(async (req, res) => {
-  const phone = String(req.body.phone || "").replace(/\\D/g, "");
-  if (!/^[6-9]\\d{9}$/.test(phone)) return res.status(400).json({ error: "Enter your registered 10-digit Indian mobile number." });
+  const phone = String(req.body.phone || "").replace(/\D/g, "");
+  if (!/^[6-9]\d{9}$/.test(phone)) return res.status(400).json({ error: "Enter your registered 10-digit Indian mobile number." });
   const orders = (await readRecords("orders"))
-    .filter(o => String(o.phone || "").replace(/\\D/g, "").slice(-10) === phone)
+    .filter(o => String(o.phone || "").replace(/\D/g, "").slice(-10) === phone)
     .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
     .map(order => ({
       id: order.id,
       status: order.status,
       paymentStatus: order.paymentStatus || (order.status === "PENDING_PAYMENT" ? "PENDING" : ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) ? "PAID" : "PENDING"),
-      subtotal: Number(order.subtotal ?? (Number(order.total || 0) - Number(order.shipping || 0))),
-      shipping: Number(order.shipping ?? 100),
+      subtotal: Number(order.subtotal ?? order.total ?? 0),
+      shipping: Number(order.shipping ?? 0),
       total: Number(order.total || 0),
       createdAt: order.createdAt,
       items: (order.items || []).map(item => ({ name: item.name, quantity: item.quantity, size: item.size || "" }))
