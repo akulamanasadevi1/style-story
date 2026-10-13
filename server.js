@@ -378,6 +378,21 @@ app.patch("/api/admin/orders/:id", requireAdmin, requireSupabase, asyncRoute(asy
 app.get("/admin", (req, res) => res.sendFile(path.join(PUBLIC_DIR, "admin.html")));
 app.get("*", (req, res) => res.sendFile(path.join(PUBLIC_DIR, "index.html")));
 
+// STYLE_STORY_ERROR_LOGGING: surface actionable server errors in Render Runtime Logs.
+app.use((err, req, res, next) => {
+  console.error("[STYLE_STORY_ERROR_LOGGING]", JSON.stringify({
+    method: req.method,
+    path: req.path,
+    message: err && err.message ? err.message : String(err),
+    code: err && err.code,
+    details: err && err.details,
+    hint: err && err.hint,
+    status: err && err.status
+  }));
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: "Internal server error. Check Render Runtime Logs for STYLE_STORY_ERROR_LOGGING." });
+});
+
 app.listen(PORT, () => {
   console.log(`${SHOP_NAME} running on http://localhost:${PORT}`);
   console.log(supabase ? "Product/order data is stored in Supabase." : "WARNING: Supabase is not configured; database routes will be unavailable.");
