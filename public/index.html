@@ -1017,3 +1017,104 @@ $("#year").textContent=new Date().getFullYear();load().then(()=>{renderCart();if
 setInterval(refreshProductsSilently,3000);
 </script>
 </body></html>
+
+
+/* Customer checkout: phone-first responsive layout */
+@media(max-width:650px){
+  #checkoutOverlay{
+    align-items:flex-start!important;
+    justify-content:center!important;
+    padding:10px!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  #checkoutOverlay .modal{
+    width:100%!important;
+    max-width:480px!important;
+    min-width:0!important;
+    max-height:calc(100dvh - 20px)!important;
+    margin:auto!important;
+    padding:18px 15px!important;
+    border-radius:16px!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+  }
+  #checkoutOverlay .modal>div:first-child{
+    align-items:center!important;
+    gap:8px!important;
+    margin-bottom:14px!important;
+  }
+  #checkoutOverlay .modal h2{
+    font-size:clamp(21px,6vw,27px)!important;
+    line-height:1.2!important;
+    margin:0!important;
+  }
+  #checkoutOverlay #closeCheckout{
+    flex:0 0 auto!important;
+    padding:9px 10px!important;
+    font-size:12px!important;
+  }
+  #checkoutForm{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:11px!important;
+    width:100%!important;
+  }
+  #checkoutForm .field{
+    min-width:0!important;
+    margin:0!important;
+    gap:6px!important;
+  }
+  #checkoutForm label{font-size:13px!important}
+  #checkoutForm input,
+  #checkoutForm textarea{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:12px!important;
+    font-size:16px!important;
+    border-radius:9px!important;
+  }
+  #checkoutForm textarea{
+    min-height:96px!important;
+    resize:vertical;
+  }
+  #checkoutForm .small{
+    margin:0!important;
+    font-size:11px!important;
+    line-height:1.4!important;
+  }
+  #checkoutForm button[type="submit"]{
+    width:100%!important;
+    min-height:50px!important;
+    padding:13px 12px!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    line-height:1.35!important;
+    font-size:13px!important;
+    border-radius:10px!important;
+  }
+  #checkoutOverlay #paymentResult{
+    min-width:0!important;
+    overflow-wrap:anywhere!important;
+  }
+  #checkoutOverlay #paymentResult img,
+  #checkoutOverlay #paymentResult canvas{
+    display:block!important;
+    max-width:100%!important;
+    height:auto!important;
+    margin:12px auto!important;
+  }
+  #checkoutOverlay .small{
+    font-size:11px!important;
+    line-height:1.5!important;
+  }
+}
+@media(max-width:360px){
+  #checkoutOverlay{padding:6px!important}
+  #checkoutOverlay .modal{
+    max-height:calc(100dvh - 12px)!important;
+    padding:15px 12px!important;
+  }
+  #checkoutForm button[type="submit"]{font-size:12px!important}
+}
