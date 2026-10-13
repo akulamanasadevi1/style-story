@@ -70,16 +70,24 @@ async function readProducts() {
   const normalized = [];
   for (const source of products) {
     let product = { ...source, id: String(source.id ?? source.productId ?? source.product_id ?? source.sku ?? crypto.randomUUID()) };
-    // Automatically turn existing products without an MRP into a 35% offer.
-    // Preserve products that already have a valid original price / offer price pair.
     const price = Number(product.price);
     const mrp = Number(product.compareAtPrice);
-    if (Number.isFinite(price) && price > 0 && !(Number.isFinite(mrp) && mrp > price)) {
-      const originalPrice = Math.round(price * 100) / 100;
-      const offerPrice = Math.max(1, Math.round(originalPrice * 0.65 * 100) / 100);
-      product = { ...product, price: offerPrice, compareAtPrice: originalPrice };
-      await saveRecord("products", product);
-      console.log("[AUTO_OFFER] Applied 35% offer to product", product.id);
+    if (Number.isFinite(price) && price > 0) {
+      // Give each product a stable, different offer (20%, 25%, 30%, 35% or 40%).
+      // If an earlier automatic 35% offer was already saved, recalculate from its stored MRP.
+      let hash = 0;
+      for (const char of String(product.id || product.name || "style")) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+      const discounts = [20, 25, 30, 35, 40];
+      const discount = discounts[hash % discounts.length];
+      const looksLikeEarlierAutoOffer = Number.isFinite(mrp) && mrp > price && Math.abs(price / mrp - 0.65) < 0.006;
+      const needsOffer = !(Number.isFinite(mrp) && mrp > price);
+      if (needsOffer || looksLikeEarlierAutoOffer) {
+        const originalPrice = Math.round((needsOffer ? price : mrp) * 100) / 100;
+        const offerPrice = Math.max(1, Math.round(originalPrice * (1 - discount / 100) * 100) / 100);
+        product = { ...product, price: offerPrice, compareAtPrice: originalPrice };
+        await saveRecord("products", product);
+        console.log("[AUTO_OFFER] Applied " + discount + "% offer to product", product.id);
+      }
     }
     normalized.push(product);
   }
