@@ -865,6 +865,57 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,-apple-system,"Sego
 }
 
 
+
+/* Style Story premium storefront polish */
+:root{--rose:#a34f60;--rose-dark:#7e3447;--rose2:#f7e8eb;--gold:#bd965c;--shadow:0 16px 40px rgba(66,35,31,.09)}
+body{background:radial-gradient(ellipse at 5% 10%,#f6e8e0 0,transparent 30%),radial-gradient(ellipse at 95% 35%,#f8e9ee 0,transparent 28%),#fffaf7}
+.topbar{background:linear-gradient(100deg,#342027,#804252 52%,#342027);font-size:11px;letter-spacing:.12em}
+.nav{border-bottom-color:#ead6d4}
+.brand{font-size:clamp(24px,2.4vw,32px)}
+.hero{background:linear-gradient(120deg,#fff6f0 0%,#f6e7df 52%,#ecd3d0 100%)}
+.hero h1 em{color:#a34f60}
+.section{padding-top:clamp(42px,5vw,72px);padding-bottom:clamp(42px,5vw,72px)}
+.section-head{margin-bottom:28px}
+.section h2{letter-spacing:-.025em}
+.grid{align-items:stretch;gap:clamp(12px,1.8vw,24px)}
+.product{height:100%;display:flex;flex-direction:column;border:1px solid #eedfe0;border-radius:12px;background:#fffdfc;box-shadow:0 5px 20px rgba(67,39,38,.035);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.product:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(90,42,54,.12);border-color:#d8aab4}
+.product-image{flex:none;border-radius:11px 11px 0 0;aspect-ratio:3/3.65}
+.product-image img{display:block}
+.tag{border:1px solid rgba(164,79,96,.14);border-radius:3px;color:#7e3447;font-weight:750;background:rgba(255,252,249,.96)}
+.product-info{flex:1;min-width:0;padding:clamp(12px,1.4vw,18px)}
+.product-info h3{min-height:2.9em;line-height:1.45;letter-spacing:-.01em;color:#35242a}
+.price-row{align-items:center;min-height:54px;gap:8px}
+.price{font-size:clamp(15px,1.2vw,18px);color:#8e3c51;font-weight:800}
+.price-stack{gap:3px}
+.old-price{font-size:12px;color:#8f8584}
+.offer-badge{background:linear-gradient(90deg,#fff0f2,#fbe2e7);border:1px solid #f2d1d9;color:#9b344d;border-radius:4px;font-size:9px;letter-spacing:.04em;white-space:normal}
+.add{border-radius:6px;padding:9px 12px;font-weight:700;min-width:82px}
+.product-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:auto;padding-top:14px}
+.details-btn,.buy-now{border-radius:6px;min-height:43px;padding:10px 7px;font-size:12px;font-weight:750}
+.details-btn{border-color:#eadbdd;background:#fffaf9}
+.buy-now{background:linear-gradient(135deg,#963e56,#b85e79);border-color:#a34f60;box-shadow:0 5px 12px rgba(163,79,96,.13)}
+.buy-now:hover{background:linear-gradient(135deg,#7e3447,#9c405a)}
+.filter{border-radius:8px;padding:10px 15px;background:#fffdfc;border-color:#eadbdd}
+.filter.active{background:linear-gradient(120deg,#8b394f,#a34f60);border-color:#a34f60}
+.pill{border-radius:8px}
+.primary{background:linear-gradient(135deg,#87374d,#aa536d);border-color:#87374d;border-radius:6px}
+.cart-fab{background:linear-gradient(135deg,#773247,#a34f60);border:1px solid #c17a8b;border-radius:12px}
+@media(max-width:650px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .product-image{aspect-ratio:3/4}
+ .product-info{padding:11px}
+ .product-info h3{font-size:13px;min-height:3em}
+ .price-row{align-items:flex-start;min-height:62px}
+ .price{font-size:15px}
+ .offer-badge{font-size:8px;padding:3px 4px}
+ .add{min-width:0;padding:8px 9px;font-size:11px}
+ .product-actions{gap:6px;padding-top:10px}
+ .details-btn,.buy-now{font-size:11px;min-height:42px;padding:8px 4px}
+ .section-head{align-items:flex-start;flex-direction:column}
+ .topbar{letter-spacing:.07em;font-size:10px}
+}
+
 </style>
 </head>
 <body>
