@@ -22,7 +22,7 @@
 <script>
 const $=s=>document.querySelector(s);let allProducts=[];
 function msg(el,text,kind="error"){el.innerHTML=`<div class="${kind}">${esc(text)}</div>`}function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-async function api(url,options={}){const r=await fetch(url,{credentials:"same-origin",...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||`Request failed (${r.status})`);return data}
+async function api(url,options={}){const r=await fetch(url,{credentials:"same-origin",...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});const data=await r.json().catch(()=>({}));if(!r.ok){const detail=[data.diagnostic,data.code,data.details,data.hint].filter(Boolean).join(" | ");throw new Error([data.error||`Request failed (${r.status})`,detail].filter(Boolean).join(" — "));}return data}
 async function checkSession(){try{const d=await api("/api/admin/me");if(d.authenticated)showDashboard();else showLogin()}catch{showLogin()}}
 function showLogin(){$("#loginPanel").classList.remove("hide");$("#dashboard").classList.add("hide");$("#logout").classList.add("hide")}
 function showDashboard(){$("#loginPanel").classList.add("hide");$("#dashboard").classList.remove("hide");$("#logout").classList.remove("hide");loadProducts();loadOrders()}
