@@ -266,7 +266,7 @@ app.post("/api/admin/products", requireAdmin, requireSupabase, (req, res, next) 
   if (!name) return res.status(400).json({ error: "Please enter a product name." });
   if (!Number.isFinite(price) || price <= 0) return res.status(400).json({ error: "Price must be greater than ₹0." });
   if (!imageUrl || !validImageUrl(imageUrl)) return res.status(400).json({ error: "Please upload a product image." });
-  const product = { id: crypto.randomUUID(), name, description, price: Math.round(price * 100) / 100, imageUrl, category, sizes, stock, active: true, createdAt: new Date().toISOString() };
+  const compareAtPrice = Number(req.body.compareAtPrice || 0);\n  if (compareAtPrice > 0 && (!Number.isFinite(compareAtPrice) || compareAtPrice <= price)) return res.status(400).json({ error: "Original price must be greater than the offer price." });\n  const product = { id: crypto.randomUUID(), name, description, price: Math.round(price * 100) / 100, ...(compareAtPrice > price ? { compareAtPrice: Math.round(compareAtPrice * 100) / 100 } : {}), imageUrl, category, sizes, stock, active: true, createdAt: new Date().toISOString() };
   await saveRecord("products", product);
   res.status(201).json(product);
 }));
@@ -290,7 +290,7 @@ app.put("/api/admin/products/:id", requireAdmin, requireSupabase, asyncRoute(asy
   const price = Number(req.body.price ?? old.price);
   const imageUrl = cleanText(req.body.imageUrl ?? old.imageUrl, 1000);
   if (!name || !Number.isFinite(price) || price <= 0 || !(imageUrl.startsWith("/uploads/") || validImageUrl(imageUrl))) return res.status(400).json({ error: "Check product name, price and image URL." });
-  products[index] = { ...old, name, description: cleanText(req.body.description ?? old.description, 1500), price: Math.round(price * 100) / 100, imageUrl, category: cleanText(req.body.category ?? old.category, 80), sizes: Array.isArray(req.body.sizes) ? req.body.sizes : old.sizes, stock: Math.max(0, Math.floor(Number(req.body.stock ?? old.stock))) };
+  const compareAtPrice = Number(req.body.compareAtPrice ?? old.compareAtPrice ?? 0);\n  if (compareAtPrice > 0 && (!Number.isFinite(compareAtPrice) || compareAtPrice <= price)) return res.status(400).json({ error: "Original price must be greater than the offer price." });\n  products[index] = { ...old, name, description: cleanText(req.body.description ?? old.description, 1500), price: Math.round(price * 100) / 100, ...(compareAtPrice > price ? { compareAtPrice: Math.round(compareAtPrice * 100) / 100 } : { compareAtPrice: null }), imageUrl, category: cleanText(req.body.category ?? old.category, 80), sizes: Array.isArray(req.body.sizes) ? req.body.sizes : old.sizes, stock: Math.max(0, Math.floor(Number(req.body.stock ?? old.stock))) };
   await saveRecord("products", products[index]);
   res.json(products[index]);
 }));
