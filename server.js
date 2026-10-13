@@ -259,7 +259,6 @@ app.post("/api/admin/products", requireAdmin, requireSupabase, (req, res, next) 
   const sizes = Array.isArray(req.body.sizes) ? req.body.sizes.map(s => cleanText(s, 12)).filter(Boolean).slice(0, 12) : cleanText(req.body.sizes, 100).split(",").map(s => s.trim()).filter(Boolean).slice(0, 12);
   if (!name) return res.status(400).json({ error: "Please enter a product name." });
   if (!Number.isFinite(price) || price <= 0) return res.status(400).json({ error: "Price must be greater than ₹0." });
-  if (!imageUrl || (!imageUrl.startsWith("/uploads/") && !validImageUrl(imageUrl))) return res.status(400).json({ error: "Please upload a product image." });
   if (!imageUrl || !validImageUrl(imageUrl)) return res.status(400).json({ error: "Please upload a product image." });
   const product = { id: crypto.randomUUID(), name, description, price: Math.round(price * 100) / 100, imageUrl, category, sizes, stock, active: true, createdAt: new Date().toISOString() };
   await saveRecord("products", product);
