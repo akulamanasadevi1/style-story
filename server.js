@@ -322,7 +322,9 @@ app.post("/api/admin/products", requireAdmin, requireSupabase, (req, res, next) 
   if (!name) return res.status(400).json({ error: "Please enter a product name." });
   if (!Number.isFinite(price) || price <= 0) return res.status(400).json({ error: "Price must be greater than ₹0." });
   if (!imageUrl || !validImageUrl(imageUrl)) return res.status(400).json({ error: "Please upload a product image." });
-  const compareAtPrice = Number(req.body.compareAtPrice || 0);\n  if (compareAtPrice > 0 && (!Number.isFinite(compareAtPrice) || compareAtPrice <= price)) return res.status(400).json({ error: "Original price must be greater than the offer price." });\n  const product = { id: crypto.randomUUID(), name, description, price: Math.round(price * 100) / 100, ...(compareAtPrice > price ? { compareAtPrice: Math.round(compareAtPrice * 100) / 100 } : {}), imageUrl, category, sizes, stock, active: true, createdAt: new Date().toISOString() };
+  const compareAtPrice = Number(req.body.compareAtPrice || 0);
+  if (compareAtPrice > 0 && (!Number.isFinite(compareAtPrice) || compareAtPrice <= price)) return res.status(400).json({ error: "Original price must be greater than the offer price." });
+  const product = { id: crypto.randomUUID(), name, description, price: Math.round(price * 100) / 100, ...(compareAtPrice > price ? { compareAtPrice: Math.round(compareAtPrice * 100) / 100 } : {}), imageUrl, category, sizes, stock, active: true, createdAt: new Date().toISOString() };
   await saveRecord("products", product);
   res.status(201).json(product);
 }));
