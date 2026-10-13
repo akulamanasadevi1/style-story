@@ -5,6 +5,7 @@ const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
 const { createClient } = require("@supabase/supabase-js");
+const webpush = require("web-push");
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -32,6 +33,10 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_FROM_NUMBER = process.env.TWILIO_FROM_NUMBER || "";
 const ADMIN_SMS_NUMBER = process.env.ADMIN_SMS_NUMBER || "";
+const VAPID_PUBLIC_KEY = (process.env.VAPID_PUBLIC_KEY || "").trim();
+const VAPID_PRIVATE_KEY = (process.env.VAPID_PRIVATE_KEY || "").trim();
+const VAPID_SUBJECT = (process.env.VAPID_SUBJECT || "mailto:admin@style-story.onrender.com").trim();
+if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
@@ -215,6 +220,57 @@ function validImageUrl(value) {
   } catch { return false; }
 }
 
+app.get("/api/push/public-key", (req, res) => {
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return res.status(503).json({ error: "Push notifications are not configured on the server yet." });
+  res.json({ publicKey: VAPID_PUBLIC_KEY });
+});
+app.post("/api/admin/push-subscription", requireAdmin, requireSupabase, asyncRoute(async (req, res) => {
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return res.status(503).json({ error: "Push notifications are not configured on the server yet." });
+  const subscription = req.body?.subscription;
+  if (!subscription || typeof subscription.endpoint !== "string" || !subscription.keys?.p256dh || !subscription.keys?.auth) return res.status(400).json({ error: "Invalid push subscription." });
+  const { error } = await supabase.from("admin_push_subscriptions").upsert({ endpoint: subscription.endpoint, subscription, created_at: new Date().toISOString() }, { onConflict: "endpoint" });
+  if (error) throw error;
+  res.json({ ok: true });
+}));
+app.delete("/api/admin/push-subscription", requireAdmin, requireSupabase, asyncRoute(async (req, res) => {
+  const endpoint = cleanText(req.body?.endpoint, 3000);
+  if (!endpoint) return res.status(400).json({ error: "Subscription endpoint is required." });
+  const { error } = await supabase.from("admin_push_subscriptions").delete().eq("endpoint", endpoint);
+  if (error) throw error;
+  res.json({ ok: true });
+}));
+async function sendWebPushOrderAlert(order) {
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !supabase) {
+    console.log("[Web Push] Not configured; push alert skipped.");
+    return { sent: false, reason: "not_configured" };
+  }
+  const { data, error } = await supabase.from("admin_push_subscriptions").select("endpoint,subscription");
+  if (error) {
+    console.error("[Web Push] Subscription read failed:", error.message);
+    return { sent: false, reason: "database_error" };
+  }
+  const payload = JSON.stringify({
+    title: "New Style Story order",
+    body: order.customerName + " · ₹" + Number(order.total || 0).toLocaleString("en-IN") + " · " + order.id,
+    url: "/admin.html",
+    tag: String(order.id)
+  });
+  const results = await Promise.allSettled((data || []).map(async row => {
+    try {
+      await webpush.sendNotification(row.subscription, payload, { TTL: 60 * 60 });
+      return true;
+    } catch (err) {
+      if (err.statusCode === 404 || err.statusCode === 410) {
+        await supabase.from("admin_push_subscriptions").delete().eq("endpoint", row.endpoint);
+      }
+      console.error("[Web Push] Send failed:", err.statusCode || "", err.message);
+      throw err;
+    }
+  }));
+  const sent = results.filter(r => r.status === "fulfilled").length;
+  console.log("[Web Push] Order", order.id, "sent to", sent, "of", results.length, "subscription(s).");
+  return { sent: sent > 0, count: sent };
+}
 app.get("/api/config", (req, res) => res.json({
   shopName: SHOP_NAME,
   contactEmail: (process.env.SHOP_CONTACT_EMAIL || "manasadevi508@gmail.com").trim(),
@@ -332,6 +388,7 @@ app.post("/api/checkout/upi-order", requireSupabase, asyncRoute(async (req, res)
     paymentStatus: "PENDING", status: "PENDING_PAYMENT", createdAt: new Date().toISOString()
   };
   await saveRecord("orders", order);
+  sendWebPushOrderAlert(order).catch(err => console.error("[Web Push] Order alert error:", err.message));
   sendCustomerOrderSms(order).catch(err => console.error("[Customer order SMS] Alert error:", err.message));
   sendAdminSmsAlert(order).catch(err => console.error("[Admin SMS] Alert error:", err.message));
   sendWhatsAppOrderAlert(order).catch(err => console.error("[WhatsApp] Alert error:", err.message));
