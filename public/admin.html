@@ -3,6 +3,33 @@
 <style>
 :root{--ink:#2b2022;--rose:#a34f60;--bg:#faf6f3;--line:#eadfdb;--muted:#786b6c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif}button,input,textarea,select{font:inherit}.top{background:var(--ink);color:#fff;padding:20px clamp(16px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{font: bold 27px Georgia,serif}.brand span{color:#e3aab5}.top a{color:#fff}.wrap{max-width:1200px;margin:0 auto;padding:28px 16px}.panel{background:white;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:20px;box-shadow:0 8px 30px #3a1c1e08}.login{max-width:430px;margin:50px auto}.muted{color:var(--muted);font-size:13px}.field{display:grid;gap:6px;margin:13px 0}.field label{font-size:12px;color:var(--muted)}.size-options{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}.size-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:#fffaf7;color:var(--ink);font-size:13px;cursor:pointer}.size-chip input{width:16px;height:16px;margin:0;accent-color:var(--rose)}.size-hint{font-size:12px;color:var(--muted);margin-top:4px}input,textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:5px;background:white}textarea{min-height:80px;resize:vertical}.btn{border:0;border-radius:5px;background:var(--rose);color:white;padding:12px 16px;font-weight:650}.btn.secondary{background:white;color:var(--ink);border:1px solid var(--line)}.btn.danger{background:#7b2c39}.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}.tabs button.active{background:var(--ink);color:#fff}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.product{border:1px solid var(--line);padding:12px;border-radius:7px;display:flex;gap:12px}.product img{width:75px;height:95px;object-fit:cover;background:#eee}.product p{margin:5px 0;color:var(--muted);font-size:12px}.order{border:1px solid var(--line);padding:14px;border-radius:7px;margin:10px 0}.order-items{display:grid;gap:10px;margin:14px 0}.order-item{display:flex;align-items:center;gap:12px;padding:10px;background:#fffaf7;border:1px solid var(--line);border-radius:8px}.order-item img{width:76px;height:96px;object-fit:cover;border-radius:5px;background:#f1e7df;flex:0 0 auto}.order-item .muted{margin:5px 0}.error{color:#9d2435;background:#fff0f1;padding:10px;border-radius:5px;margin:10px 0}.success{color:#216844;background:#e9f8ef;padding:10px;border-radius:5px;margin:10px 0}.hide{display:none!important}@media(max-width:700px){.grid,.products{grid-template-columns:1fr}.top{align-items:flex-start}.product{gap:10px}.panel{padding:16px}}
 .description-field{grid-column:1/-1}.description-field textarea{min-height:145px;line-height:1.6;white-space:pre-wrap}
+
+/* STYLE STORY — admin dashboard theme */
+:root{--ink:#35263a!important;--rose:#b64f83!important;--bg:#fff8f5!important;--line:#eadced!important;--muted:#796b80!important}
+body{background:radial-gradient(ellipse at 8% 4%,#fbe2ef 0,transparent 30%),radial-gradient(ellipse at 95% 10%,#eee5ff 0,transparent 34%),linear-gradient(180deg,#fffaf7,#fff7fb)!important;color:#35263a!important}
+.top{background:linear-gradient(110deg,#50304f,#75446f 55%,#50304f)!important;color:#fff7fc!important;box-shadow:0 8px 28px #61395b18!important}
+.brand span{color:#e9b8df!important}
+.top a{color:#fff7fc!important}
+.wrap{max-width:1240px!important}
+.panel{background:#fffdfc!important;border:1px solid #eadced!important;border-radius:16px!important;box-shadow:0 12px 34px #61395b0d!important}
+.login{border-radius:20px!important}
+h1,h2,h3{color:#39243e}
+.muted,.field label,.size-hint{color:#796b80!important}
+input,textarea,select{border-color:#e6d6e9!important;border-radius:9px!important;background:#fff!important;color:#35263a!important}
+input:focus,textarea:focus,select:focus{outline:2px solid #d6a3d6!important;border-color:#b86ca8!important}
+.btn,button{border-radius:9px!important}
+.btn:not(.secondary),button.primary{background:linear-gradient(120deg,#b64f83,#8e4a9e)!important;border:1px solid #b25d9e!important;color:#fff!important;box-shadow:0 5px 14px #a14a851c!important}
+.btn:not(.secondary):hover,button.primary:hover{background:linear-gradient(120deg,#ca6094,#a45bb3)!important}
+.btn.secondary{background:#fff7fb!important;border:1px solid #e6cfe7!important;color:#82477e!important}
+.size-chip{background:#fff7fb!important;border-color:#eadced!important;color:#513a59!important;border-radius:9px!important}
+.size-chip input{accent-color:#b64f83!important}
+.product,.order{border-color:#eadced!important;border-radius:10px!important}
+.order-item{background:#fff7fb!important;border-color:#eadced!important}
+.error{color:#a12655!important;background:#fff0f5!important;border-radius:8px!important}
+.success{color:#246d4a!important;background:#edf9f1!important;border-radius:8px!important}
+table th{background:#fbf0fa!important;color:#5e3e67!important}
+@media(max-width:700px){.top{background:linear-gradient(110deg,#50304f,#75446f)!important}.panel{border-radius:13px!important}}
+
 </style></head><body>
 <header class="top"><div><div class="brand">style <span>story.</span></div><div class="muted" style="color:#ddcfd0">Store management</div></div><div style="display:flex;gap:12px;align-items:center"><a href="/" style="font-size:13px">View store</a><button class="btn secondary hide" id="logout">Log out</button></div></header>
 <main class="wrap"><section id="loginPanel" class="panel login"><h1 style="font:500 34px Georgia,serif;margin:0 0 5px">Welcome back</h1><p class="muted">Sign in to manage your products and customer orders.</p><form id="loginForm"><div class="field"><label>Admin email</label><input type="email" name="email" required autocomplete="username"></div><div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div><button class="btn" style="width:100%">Sign in</button></form><div id="loginMessage"></div></section>
