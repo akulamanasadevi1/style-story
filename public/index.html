@@ -1160,3 +1160,18 @@ $("#year").textContent=new Date().getFullYear();load().then(()=>{renderCart();if
 setInterval(refreshProductsSilently,3000);
 </script>
 </body></html>
+
+
+/* Mobile dress/product cards: show three products in each row */
+@media(max-width:650px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+  .product{min-width:0!important;border-radius:12px!important}
+  .product-image{aspect-ratio:3/4!important;overflow:hidden!important}
+  .product-image img{width:100%!important;height:100%!important;object-fit:cover!important}
+  .product-info{padding:8px 7px!important}
+  .product-info h3{font-size:12px!important;line-height:1.25!important}
+  .price{font-size:14px!important}
+  .offer-badge{font-size:8px!important;padding:4px 5px!important}
+  .product-actions{grid-template-columns:1fr!important;gap:5px!important;padding-top:8px!important}
+  .details-btn,.buy-now{font-size:10px!important;padding:8px 4px!important}
+}
