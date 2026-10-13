@@ -222,6 +222,7 @@ function validImageUrl(value) {
 
 app.get("/api/config", (req, res) => res.json({
   shopName: SHOP_NAME,
+  contactEmail: (process.env.SHOP_CONTACT_EMAIL || "manasadevi508@gmail.com").trim(),
   contactNumber: SHOP_CONTACT_NUMBER,
   upiId: SHOP_UPI_ID
 }));
