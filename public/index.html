@@ -1056,34 +1056,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:650px){.hero{background:linear-gradient(145deg,#fff0f5,#f0e8ff)!important}.product{border-color:#eadced!important}.cart-fab{background:linear-gradient(135deg,#8e4a9e,#b64f83)!important}}
 
 
-/* RESTORE ORIGINAL HEADER — keep the new colourful storefront below it */
-.topbar{background:linear-gradient(90deg,#241d19,#463326 50%,#241d19)!important;color:#f8ead5!important;text-align:center!important}
-.nav{background:#fbf7f0ef!important;border-bottom:1px solid #e6d8c7!important;box-shadow:0 8px 28px #3b2a1908!important}
-.brand{color:#211b18!important}
-.brand span{color:#b18a55!important}
-.navlinks a{color:#211b18!important}
-.pill{border:1px solid #e7d9c8!important;background:#fff!important;color:#211b18!important}
-@media(max-width:650px){
-  .mobile-announcement{background:#fff8fc!important;color:#51364c!important}
-  .mobile-store-header{background:#ed1686!important;color:#fff!important}
-  .mobile-nav-row{background:#fff8fc!important;border-bottom:1px solid #f0e1e9!important}
-  .mobile-nav-row a{color:#4b3349!important}
-}
-
-
-/* VISIBILITY FIX: keep the original header and hero fully readable */
-html,body{opacity:1!important;filter:none!important}
-.topbar,.nav,.nav *,.hero,.hero-copy,.hero-copy *,.hero-art,.hero-art *{opacity:1!important}
-.topbar{color:#fff7fc!important;background:linear-gradient(90deg,#412c48,#70445e 50%,#3d2b4c)!important}
-.nav{background:#fffaf7!important}
-.nav .brand,.nav .navlinks a,.nav .pill{color:#38283c!important}
-.hero-copy{background:linear-gradient(115deg,#fff0f5f8,#f5eaffee)!important}
-.hero h1{color:#39243e!important}.hero h1 em{color:#a64c83!important}
-.hero p{color:#5f5064!important}
-.hero .eyebrow{color:#8d4c83!important}
-.hero .primary{color:#fff!important}
-.hero-art{background:#eadcff!important}
-.hero-art img{opacity:1!important;filter:none!important}
 
 
 /* FIX FADED BANNER ARTWORK: image itself needs stronger contrast */
@@ -1095,6 +1067,12 @@ html,body{opacity:1!important;filter:none!important}
 @media(max-width:650px){
   .exact-banner{filter:contrast(1.35) saturate(1.28) brightness(.98)!important}
 }
+
+
+/* RESTORE ORIGINAL IMAGE HEADER: keep header transparent over the original banner */
+.nav.exact-image-nav{background:transparent!important;box-shadow:none!important;border:0!important;backdrop-filter:none!important}
+.exact-image-hero{background:#f6e5ee!important}
+.exact-banner{opacity:1!important;filter:contrast(1.18) saturate(1.12) brightness(1)!important}
 
 </style>
 </head>
