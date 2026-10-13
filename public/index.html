@@ -1085,6 +1085,17 @@ html,body{opacity:1!important;filter:none!important}
 .hero-art{background:#eadcff!important}
 .hero-art img{opacity:1!important;filter:none!important}
 
+
+/* FIX FADED BANNER ARTWORK: image itself needs stronger contrast */
+.exact-banner{
+  opacity:1!important;
+  filter:contrast(1.42) saturate(1.35) brightness(.97)!important;
+}
+.exact-image-hero{background:#f6e5ee!important}
+@media(max-width:650px){
+  .exact-banner{filter:contrast(1.35) saturate(1.28) brightness(.98)!important}
+}
+
 </style>
 </head>
 <body>
