@@ -67,7 +67,23 @@ async function deleteRecord(table, id) {
 }
 async function readProducts() {
   const products = await readRecords("products");
-  return products.map(product => ({ ...product, id: String(product.id ?? product.productId ?? product.product_id ?? product.sku ?? crypto.randomUUID()) }));
+  const normalized = [];
+  for (const source of products) {
+    let product = { ...source, id: String(source.id ?? source.productId ?? source.product_id ?? source.sku ?? crypto.randomUUID()) };
+    // Automatically turn existing products without an MRP into a 35% offer.
+    // Preserve products that already have a valid original price / offer price pair.
+    const price = Number(product.price);
+    const mrp = Number(product.compareAtPrice);
+    if (Number.isFinite(price) && price > 0 && !(Number.isFinite(mrp) && mrp > price)) {
+      const originalPrice = Math.round(price * 100) / 100;
+      const offerPrice = Math.max(1, Math.round(originalPrice * 0.65 * 100) / 100);
+      product = { ...product, price: offerPrice, compareAtPrice: originalPrice };
+      await saveRecord("products", product);
+      console.log("[AUTO_OFFER] Applied 35% offer to product", product.id);
+    }
+    normalized.push(product);
+  }
+  return normalized;
 }
 async function uploadProductImage(file) {
   if (!file || !file.buffer) throw new Error("Choose a product image first.");
