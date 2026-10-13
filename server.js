@@ -317,10 +317,13 @@ app.post("/api/checkout/upi-order", requireSupabase, asyncRoute(async (req, res)
     total += product.price * qty;
     orderItems.push({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl, category: product.category, quantity: qty, size: cleanText(item.size, 20) });
   }
+  const shipping = 100;
+  const subtotal = Math.round(total * 100) / 100;
+  const orderTotal = Math.round((subtotal + shipping) * 100) / 100;
   const order = {
     id: "SS-" + Date.now().toString(36).toUpperCase() + "-" + crypto.randomBytes(2).toString("hex").toUpperCase(),
-    customerName, phone, address, pincode, items: orderItems, total: Math.round(total * 100) / 100,
-    status: "PENDING_PAYMENT", createdAt: new Date().toISOString()
+    customerName, phone, address, pincode, items: orderItems, subtotal, shipping, total: orderTotal,
+    paymentStatus: "PENDING", status: "PENDING_PAYMENT", createdAt: new Date().toISOString()
   };
   await saveRecord("orders", order);
   sendCustomerOrderSms(order).catch(err => console.error("[Customer order SMS] Alert error:", err.message));
@@ -330,21 +333,23 @@ app.post("/api/checkout/upi-order", requireSupabase, asyncRoute(async (req, res)
   res.status(201).json({ order, upiLink: `upi://pay?${params.toString()}` });
 }));
 app.post("/api/track-order", requireSupabase, asyncRoute(async (req, res) => {
-  const orderId = cleanText(req.body.orderId, 100);
   const phone = String(req.body.phone || "").replace(/\\D/g, "");
-  if (!orderId || phone.length < 10) return res.status(400).json({ error: "Enter your order ID and registered mobile number." });
-  const order = (await readRecords("orders")).find(o => {
-    const savedPhone = String(o.phone || "").replace(/\\D/g, "");
-    return o.id === orderId && savedPhone.slice(-10) === phone.slice(-10);
-  });
-  if (!order) return res.status(404).json({ error: "We could not find an order matching those details. Please check your order ID and phone number." });
-  res.json({
-    id: order.id,
-    status: order.status,
-    total: order.total,
-    createdAt: order.createdAt,
-    items: (order.items || []).map(item => ({ name: item.name, quantity: item.quantity, size: item.size || "" }))
-  });
+  if (!/^[6-9]\\d{9}$/.test(phone)) return res.status(400).json({ error: "Enter your registered 10-digit Indian mobile number." });
+  const orders = (await readRecords("orders"))
+    .filter(o => String(o.phone || "").replace(/\\D/g, "").slice(-10) === phone)
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+    .map(order => ({
+      id: order.id,
+      status: order.status,
+      paymentStatus: order.paymentStatus || (order.status === "PENDING_PAYMENT" ? "PENDING" : ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) ? "PAID" : "PENDING"),
+      subtotal: Number(order.subtotal ?? (Number(order.total || 0) - Number(order.shipping || 0))),
+      shipping: Number(order.shipping ?? 100),
+      total: Number(order.total || 0),
+      createdAt: order.createdAt,
+      items: (order.items || []).map(item => ({ name: item.name, quantity: item.quantity, size: item.size || "" }))
+    }));
+  if (!orders.length) return res.status(404).json({ error: "No orders found for this mobile number. Please check the number used at checkout." });
+  res.json({ orders });
 }));
 app.get("/api/orders/:id/status", requireSupabase, asyncRoute(async (req, res) => {
   const order = (await readRecords("orders")).find(o => o.id === req.params.id);
