@@ -68,29 +68,35 @@ async function deleteRecord(table, id) {
 async function readProducts() {
   const products = await readRecords("products");
   const normalized = [];
-  // Rotate realistic-looking discounts across the catalogue so adjacent products
-  // don't all show the same offer. These are automatically assigned promotions.
-  const discounts = [12, 15, 18, 20, 23, 26, 29, 32, 35, 38, 40];
-  for (let index = 0; index < products.length; index++) {
-    const source = products[index];
+  // Keep the product's originally listed selling price as the customer price.
+  // Give each product a different higher comparison price for a varied discount.
+  const discounts = [15, 18, 20, 22, 25, 28, 30, 32, 35];
+  const autoDiscountsUsedEarlier = [12, 15, 18, 20, 23, 25, 26, 29, 30, 32, 35, 38, 40];
+  for (const source of products) {
     let product = { ...source, id: String(source.id ?? source.productId ?? source.product_id ?? source.sku ?? crypto.randomUUID()) };
     const price = Number(product.price);
     const mrp = Number(product.compareAtPrice);
-    if (Number.isFinite(price) && price > 0) {
-      const previousAutoDiscounts = [20, 25, 30, 35, 40];
-      const oldAutoDiscount = Number.isFinite(mrp) && mrp > price
-        ? previousAutoDiscounts.find(d => Math.abs(price / mrp - (1 - d / 100)) < 0.006)
-        : null;
-      const needsOffer = !(Number.isFinite(mrp) && mrp > price);
-      const shouldRefreshPreviousAutoOffer = oldAutoDiscount !== undefined && oldAutoDiscount !== null;
-      if (needsOffer || shouldRefreshPreviousAutoOffer) {
-        const originalPrice = Math.round((needsOffer ? price : mrp) * 100) / 100;
-        const discount = discounts[index % discounts.length];
-        const offerPrice = Math.max(1, Math.round(originalPrice * (1 - discount / 100) * 100) / 100);
-        product = { ...product, price: offerPrice, compareAtPrice: originalPrice };
-        await saveRecord("products", product);
-        console.log("[AUTO_OFFER] Applied " + discount + "% offer to product", product.id);
-      }
+    if (!Number.isFinite(price) || price <= 0) {
+      normalized.push(product);
+      continue;
+    }
+    // One-time recovery: earlier automatic-offer code lowered price but retained
+    // the previous selling price in compareAtPrice. Restore that selling price.
+    let basePrice = Number(product.offerBasePrice);
+    if (!Number.isFinite(basePrice) || basePrice <= 0) {
+      const looksLikeEarlierAutoOffer = Number.isFinite(mrp) && mrp > price &&
+        autoDiscountsUsedEarlier.some(d => Math.abs(price / mrp - (1 - d / 100)) < 0.006);
+      basePrice = looksLikeEarlierAutoOffer ? mrp : price;
+    }
+    basePrice = Math.round(basePrice * 100) / 100;
+    let hash = 0;
+    for (const char of String(product.id || product.name || "style")) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    const discount = discounts[hash % discounts.length];
+    const originalPrice = Math.ceil((basePrice / (1 - discount / 100)) / 10) * 10;
+    if (Number(product.offerBasePrice) !== basePrice || price !== basePrice || Number(product.compareAtPrice) !== originalPrice) {
+      product = { ...product, price: basePrice, compareAtPrice: originalPrice, offerBasePrice: basePrice };
+      await saveRecord("products", product);
+      console.log("[AUTO_OFFER] Kept selling price ₹" + basePrice + " and set " + discount + "% offer for product", product.id);
     }
     normalized.push(product);
   }
