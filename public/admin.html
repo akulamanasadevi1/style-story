@@ -6,7 +6,7 @@
 </style></head><body>
 <header class="top"><div><div class="brand">style <span>story.</span></div><div class="muted" style="color:#ddcfd0">Store management</div></div><div style="display:flex;gap:12px;align-items:center"><a href="/" style="font-size:13px">View store</a><button class="btn secondary hide" id="logout">Log out</button></div></header>
 <main class="wrap"><section id="loginPanel" class="panel login"><h1 style="font:500 34px Georgia,serif;margin:0 0 5px">Welcome back</h1><p class="muted">Sign in to manage your products and customer orders.</p><form id="loginForm"><div class="field"><label>Admin email</label><input type="email" name="email" required autocomplete="username"></div><div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div><button class="btn" style="width:100%">Sign in</button></form><div id="loginMessage"></div></section>
-<section id="dashboard" class="hide"><div class="panel"><h1 style="font:500 34px Georgia,serif;margin:0 0 5px">Admin dashboard</h1><p class="muted">Manage products, inventory and customer orders.</p><div id="orderAlertStatus" class="success" role="status">Order alerts are active while this dashboard is open.</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px"><button type="button" class="btn secondary" id="enableBrowserAlerts">Enable browser notifications</button><button type="button" class="btn secondary" id="testAlert">Test alert</button></div><div class="tabs"><button class="btn secondary active" data-tab="productsTab">Products</button><button class="btn secondary" data-tab="ordersTab">Orders</button></div></div>
+<section id="dashboard" class="hide"><div class="panel"><h1 style="font:500 34px Georgia,serif;margin:0 0 5px">Admin dashboard</h1><p class="muted">Manage products, inventory and customer orders.</p><div id="orderAlertStatus" class="success" role="status">Order alerts are active while this dashboard is open.</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px"><button type="button" class="btn secondary" id="enableBrowserAlerts">Enable browser notifications</button><button type="button" class="btn secondary" id="enablePushAlerts">Enable background order alerts</button><button type="button" class="btn secondary" id="testAlert">Test alert</button></div><div class="tabs"><button class="btn secondary active" data-tab="productsTab">Products</button><button class="btn secondary" data-tab="ordersTab">Orders</button></div></div>
 <div id="productsTab" class="panel"><h2 id="productFormTitle" style="font:500 26px Georgia,serif">Add product</h2><p class="muted">Existing product details ni marchali ante Edit click cheyyi. Photo change cheyyakapothe old photo alane untundi.</p><form id="productForm" data-editing-id=""><div class="grid"><div class="field"><label>Name</label><input name="name" required maxlength="120"></div><div class="field description-field"><label>Description / Product highlights</label><textarea name="description" maxlength="1500" rows="6" placeholder="Soft breathable fabric&#10;Beautiful floral print&#10;Comfortable regular fit&#10;Perfect for casual outings"></textarea><span class="muted">Oka point ayyaka Enter press chesi next line lo next point rayi. Store lo bullet points ga display avuthayi.</span></div><div class="field"><label>Offer price (₹)</label><input name="price" type="number" min="1" step="0.01" required></div><div class="field"><label>Original price / MRP (₹) — optional</label><input name="compareAtPrice" type="number" min="0" step="0.01" placeholder="Example: 1600"><span class="muted">Offer price ₹1100, MRP ₹1600 la enter chesthe discount badge store lo kanipistundi.</span></div><div class="field"><label>Upload product photo</label><input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required><span class="muted">JPG, PNG, WEBP or GIF · maximum 5 MB</span></div><div class="field"><label>Category</label><select name="category"><option>Kurtis</option><option>Dresses</option><option>Sarees</option><option>Tops</option><option>Clothing</option><option>Accessories</option></select></div><div class="field"><label>Available sizes</label>
 <div class="size-options" id="sizeOptions">
 <label class="size-chip"><input type="checkbox" name="sizeOption" value="XS"> XS</label>
@@ -88,6 +88,43 @@ $("#enableBrowserAlerts").onclick = async () => {
     } else $('#orderAlertStatus').textContent = permission === 'denied' ? 'Chrome blocked notifications. Allow them in Site settings, then reload this page.' : 'Notifications not enabled. Allow browser permission to receive alerts.';
   } catch (err) { $('#orderAlertStatus').textContent = 'Could not enable notifications. Check Chrome Site settings and try again.'; }
 };
+$("#enablePushAlerts").onclick = async () => {
+  const button = $("#enablePushAlerts");
+  button.disabled = true;
+  try {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) throw new Error("This browser does not support background push notifications. Try Chrome on Android.");
+    if (!("Notification" in window)) throw new Error("Notifications are not supported in this browser.");
+    if (Notification.permission !== "granted") {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") throw new Error("Notifications permission was not granted. Allow it in browser site settings.");
+    }
+    const keyResponse = await fetch("/api/push/public-key", { credentials: "same-origin" });
+    const keyData = await keyResponse.json().catch(() => ({}));
+    if (!keyResponse.ok) throw new Error(keyData.error || "Could not get push notification settings.");
+    const applicationServerKey = urlBase64ToUint8Array(keyData.publicKey);
+    const registration = await navigator.serviceWorker.register("/service-worker.js");
+    adminNotificationRegistration = registration;
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+    const response = await fetch("/api/admin/push-subscription", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subscription: subscription.toJSON() })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || "Could not save push subscription.");
+    await registration.showNotification("Style Story background alerts enabled", { body: "New orders can notify you even when this dashboard is closed.", tag: "style-story-push-enabled" });
+    $("#orderAlertStatus").textContent = "Background order alerts enabled on this device. Keep notifications allowed in browser and phone settings.";
+  } catch (err) {
+    $("#orderAlertStatus").textContent = err.message || "Could not enable background alerts.";
+  } finally { button.disabled = false; }
+};
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(char => char.charCodeAt(0)));
+}
 $("#testAlert").onclick = () => showOrderAlert({ id: "TEST-ORDER", customerName: "Test customer", total: 999 });
 setInterval(pollOrderAlerts, 12000);
 checkSession();
