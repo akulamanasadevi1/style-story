@@ -4,19 +4,17 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
+const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
-const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(ROOT, "data");
-// When DATA_DIR points to Render's persistent disk, keep uploaded product photos there too.
-const UPLOAD_DIR = process.env.DATA_DIR ? path.join(DATA_DIR, "uploads") : path.join(PUBLIC_DIR, "uploads");
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-const uploadStorage = multer.diskStorage({ destination: (_req, _file, cb) => cb(null, UPLOAD_DIR), filename: (_req, file, cb) => { const ext = (path.extname(file.originalname || "").toLowerCase().match(/^\.(jpg|jpeg|png|webp|gif)$/) || [".jpg"])[0]; cb(null, Date.now() + "-" + crypto.randomBytes(5).toString("hex") + ext); } });
-const imageUpload = multer({ storage: uploadStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => { if (!/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype)) return cb(new Error("Please choose a JPG, PNG, WEBP or GIF image.")); cb(null, true); } });
-const PRODUCTS_FILE = path.join(DATA_DIR, "products.json");
-const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "product-images";
+const supabase = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
+const imageUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => { if (!/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype)) return cb(new Error("Please choose a JPG, PNG, WEBP or GIF image.")); cb(null, true); } });
 const SESSION_COOKIE = "style_story_admin";
 const SESSION_SECRET = process.env.SESSION_SECRET || "";
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
@@ -35,49 +33,40 @@ const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_FROM_NUMBER = process.env.TWILIO_FROM_NUMBER || "";
 const ADMIN_SMS_NUMBER = process.env.ADMIN_SMS_NUMBER || "";
 
-fs.mkdirSync(DATA_DIR, { recursive: true });
-if (!fs.existsSync(PRODUCTS_FILE)) fs.writeFileSync(PRODUCTS_FILE, "[]\n");
-if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, "[]\n");
-
 app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(PUBLIC_DIR, { extensions: ["html"] }));
-// Serve uploaded product images from the persistent disk when DATA_DIR is configured.
-app.use("/uploads", express.static(UPLOAD_DIR, { fallthrough: true }));
-
-function readJson(file) {
-  try {
-    const data = JSON.parse(fs.readFileSync(file, "utf8"));
-    return Array.isArray(data) ? data : [];
-  } catch (err) {
-    console.error("Could not read", path.basename(file), err.message);
-    return [];
-  }
+function requireSupabase(req, res, next) {
+  if (!supabase) return res.status(503).json({ error: "Database is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Render Environment." });
+  next();
 }
-function writeJson(file, data) {
-  const temp = file + ".tmp";
-  fs.writeFileSync(temp, JSON.stringify(data, null, 2) + "\n", "utf8");
-  fs.renameSync(temp, file);
+async function readRecords(table) {
+  const { data, error } = await supabase.from(table).select("id,data,created_at").order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []).map(row => row.data).filter(Boolean);
 }
-// Keep older product records compatible: some earlier versions used productId/product_id/sku.
-// Assign and persist a stable ID only when a record has no usable identifier.
-function readProducts() {
-  const products = readJson(PRODUCTS_FILE);
-  let changed = false;
-  const normalized = products.map(product => {
-    const existingId = product.id ?? product.productId ?? product.product_id ?? product.sku;
-    if (existingId !== undefined && existingId !== null && String(existingId).trim()) {
-      const id = String(existingId).trim();
-      if (product.id !== id) { changed = true; return { ...product, id }; }
-      return product;
-    }
-    changed = true;
-    return { ...product, id: crypto.randomUUID() };
-  });
-  if (changed) writeJson(PRODUCTS_FILE, normalized);
-  return normalized;
+async function saveRecord(table, record) {
+  const { error } = await supabase.from(table).upsert({ id: String(record.id), data: record, created_at: record.createdAt || new Date().toISOString() }, { onConflict: "id" });
+  if (error) throw error;
 }
+async function deleteRecord(table, id) {
+  const { error } = await supabase.from(table).delete().eq("id", String(id));
+  if (error) throw error;
+}
+async function readProducts() {
+  const products = await readRecords("products");
+  return products.map(product => ({ ...product, id: String(product.id ?? product.productId ?? product.product_id ?? product.sku ?? crypto.randomUUID()) }));
+}
+async function uploadProductImage(file) {
+  if (!file || !file.buffer) throw new Error("Choose a product image first.");
+  const ext = (path.extname(file.originalname || "").toLowerCase().match(/^\.(jpg|jpeg|png|webp|gif)$/) || [".jpg"])[0];
+  const objectPath = Date.now() + "-" + crypto.randomBytes(8).toString("hex") + ext;
+  const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(objectPath, file.buffer, { contentType: file.mimetype, upsert: false, cacheControl: "3600" });
+  if (error) throw error;
+  return supabase.storage.from(STORAGE_BUCKET).getPublicUrl(objectPath).data.publicUrl;
+}
+function asyncRoute(handler) { return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next); }
 function safeEqual(a, b) {
   const aa = Buffer.from(String(a));
   const bb = Buffer.from(String(b));
@@ -227,11 +216,11 @@ app.get("/api/config", (req, res) => res.json({
   upiId: SHOP_UPI_ID
 }));
 
-app.get("/api/products", (req, res) => {
-  const products = readProducts().filter(p => p.active !== false);
+app.get("/api/products", requireSupabase, asyncRoute(async (req, res) => {
+  const products = (await readProducts()).filter(p => p.active !== false);
   const paidStatuses = new Set(["PAID", "PROCESSING", "SHIPPED", "DELIVERED"]);
   const sales = new Map();
-  for (const order of readJson(ORDERS_FILE)) {
+  for (const order of await readRecords("orders")) {
     if (!paidStatuses.has(order.status)) continue;
     for (const item of order.items || []) {
       const id = String(item.id ?? item.productId ?? "");
@@ -239,7 +228,7 @@ app.get("/api/products", (req, res) => {
     }
   }
   res.json(products.map(product => ({ ...product, soldCount: sales.get(String(product.id)) || 0 })));
-});
+}));
 
 app.post("/api/admin/login", (req, res) => {
   const email = cleanText(req.body.email, 200).toLowerCase();
@@ -258,37 +247,37 @@ app.post("/api/admin/logout", (req, res) => {
   res.json({ ok: true });
 });
 app.get("/api/admin/me", (req, res) => res.json({ authenticated: isAdmin(req) }));
-app.get("/api/admin/products", requireAdmin, (req, res) => res.json(readProducts()));
-app.post("/api/admin/products", requireAdmin, (req, res, next) => imageUpload.single("image")(req, res, err => { if (err) return res.status(400).json({ error: err.message || "Image upload failed." }); next(); }), (req, res) => {
+app.get("/api/admin/products", requireAdmin, requireSupabase, asyncRoute(async (req, res) => res.json(await readProducts())));
+app.post("/api/admin/products", requireAdmin, requireSupabase, (req, res, next) => imageUpload.single("image")(req, res, err => { if (err) return res.status(400).json({ error: err.message || "Image upload failed." }); next(); }), asyncRoute(async (req, res) => {
   const name = cleanText(req.body.name, 120);
   const description = cleanText(req.body.description, 1500);
   const price = Number(req.body.price);
   const stock = Math.max(0, Math.floor(Number(req.body.stock || 0)));
-  const imageUrl = req.file ? "/uploads/" + req.file.filename : cleanText(req.body.imageUrl, 1000);
+  let imageUrl = cleanText(req.body.imageUrl, 1000);
+  if (req.file) imageUrl = await uploadProductImage(req.file);
   const category = cleanText(req.body.category, 80) || "Clothing";
   const sizes = Array.isArray(req.body.sizes) ? req.body.sizes.map(s => cleanText(s, 12)).filter(Boolean).slice(0, 12) : cleanText(req.body.sizes, 100).split(",").map(s => s.trim()).filter(Boolean).slice(0, 12);
   if (!name) return res.status(400).json({ error: "Please enter a product name." });
   if (!Number.isFinite(price) || price <= 0) return res.status(400).json({ error: "Price must be greater than ₹0." });
   if (!imageUrl || (!imageUrl.startsWith("/uploads/") && !validImageUrl(imageUrl))) return res.status(400).json({ error: "Please upload a product image." });
-  const products = readProducts();
+  if (!imageUrl || !validImageUrl(imageUrl)) return res.status(400).json({ error: "Please upload a product image." });
   const product = { id: crypto.randomUUID(), name, description, price: Math.round(price * 100) / 100, imageUrl, category, sizes, stock, active: true, createdAt: new Date().toISOString() };
-  products.unshift(product);
-  writeJson(PRODUCTS_FILE, products);
+  await saveRecord("products", product);
   res.status(201).json(product);
-});
-app.post("/api/admin/products/:id/image", requireAdmin, (req, res, next) => imageUpload.single("image")(req, res, err => { if (err) return res.status(400).json({ error: err.message || "Image upload failed." }); next(); }), (req, res) => {
+}));
+app.post("/api/admin/products/:id/image", requireAdmin, requireSupabase, (req, res, next) => imageUpload.single("image")(req, res, err => { if (err) return res.status(400).json({ error: err.message || "Image upload failed." }); next(); }), asyncRoute(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "Choose a product image first." });
-  const products = readProducts();
+  const products = await readProducts();
   const index = products.findIndex(p => String(p.id) === String(req.params.id));
   if (index < 0) return res.status(404).json({ error: "Product not found." });
-  const imageUrl = "/uploads/" + req.file.filename;
+  const imageUrl = await uploadProductImage(req.file);
   products[index] = { ...products[index], imageUrl };
-  writeJson(PRODUCTS_FILE, products);
+  await saveRecord("products", products[index]);
   res.json({ imageUrl });
-});
+}));
 
-app.put("/api/admin/products/:id", requireAdmin, (req, res) => {
-  const products = readProducts();
+app.put("/api/admin/products/:id", requireAdmin, requireSupabase, asyncRoute(async (req, res) => {
+  const products = await readProducts();
   const index = products.findIndex(p => String(p.id) === String(req.params.id));
   if (index < 0) return res.status(404).json({ error: "Product not found." });
   const old = products[index];
@@ -297,18 +286,18 @@ app.put("/api/admin/products/:id", requireAdmin, (req, res) => {
   const imageUrl = cleanText(req.body.imageUrl ?? old.imageUrl, 1000);
   if (!name || !Number.isFinite(price) || price <= 0 || !(imageUrl.startsWith("/uploads/") || validImageUrl(imageUrl))) return res.status(400).json({ error: "Check product name, price and image URL." });
   products[index] = { ...old, name, description: cleanText(req.body.description ?? old.description, 1500), price: Math.round(price * 100) / 100, imageUrl, category: cleanText(req.body.category ?? old.category, 80), sizes: Array.isArray(req.body.sizes) ? req.body.sizes : old.sizes, stock: Math.max(0, Math.floor(Number(req.body.stock ?? old.stock))) };
-  writeJson(PRODUCTS_FILE, products);
+  await saveRecord("products", products[index]);
   res.json(products[index]);
-});
-app.delete("/api/admin/products/:id", requireAdmin, (req, res) => {
-  const products = readProducts();
-  const updated = products.filter(p => p.id !== req.params.id);
-  if (updated.length === products.length) return res.status(404).json({ error: "Product not found." });
-  writeJson(PRODUCTS_FILE, updated);
+}));
+app.delete("/api/admin/products/:id", requireAdmin, requireSupabase, asyncRoute(async (req, res) => {
+  const products = await readProducts();
+  const product = products.find(p => String(p.id) === String(req.params.id));
+  if (!product) return res.status(404).json({ error: "Product not found." });
+  await deleteRecord("products", req.params.id);
   res.json({ ok: true });
-});
+}));
 
-app.post("/api/checkout/upi-order", (req, res) => {
+app.post("/api/checkout/upi-order", requireSupabase, asyncRoute(async (req, res) => {
   const customerName = cleanText(req.body.customerName, 120);
   const phone = String(req.body.phone || "").replace(/\D/g, "");
   const address = cleanText(req.body.address, 500);
@@ -317,7 +306,7 @@ app.post("/api/checkout/upi-order", (req, res) => {
   if (!customerName || !phone || !address || !items.length || !pincode) return res.status(400).json({ error: "Please enter your name, mobile number, delivery address, PIN code and at least one product." });
   if (!/^[6-9]\d{9}$/.test(phone)) return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9." });
   if (!/^[1-9]\d{5}$/.test(pincode)) return res.status(400).json({ error: "Enter a valid 6-digit Indian PIN code." });
-  const products = readProducts();
+  const products = await readProducts();
   let total = 0;
   const orderItems = [];
   for (const item of items) {
@@ -334,20 +323,18 @@ app.post("/api/checkout/upi-order", (req, res) => {
     customerName, phone, address, pincode, items: orderItems, total: Math.round(total * 100) / 100,
     status: "PENDING_PAYMENT", createdAt: new Date().toISOString()
   };
-  const orders = readJson(ORDERS_FILE);
-  orders.unshift(order);
-  writeJson(ORDERS_FILE, orders);
+  await saveRecord("orders", order);
   sendCustomerOrderSms(order).catch(err => console.error("[Customer order SMS] Alert error:", err.message));
   sendAdminSmsAlert(order).catch(err => console.error("[Admin SMS] Alert error:", err.message));
   sendWhatsAppOrderAlert(order).catch(err => console.error("[WhatsApp] Alert error:", err.message));
   const params = new URLSearchParams({ pa: SHOP_UPI_ID, pn: SHOP_NAME, am: order.total.toFixed(2), cu: "INR", tn: `Order ${order.id}` });
   res.status(201).json({ order, upiLink: `upi://pay?${params.toString()}` });
-});
-app.post("/api/track-order", (req, res) => {
+}));
+app.post("/api/track-order", requireSupabase, asyncRoute(async (req, res) => {
   const orderId = cleanText(req.body.orderId, 100);
   const phone = String(req.body.phone || "").replace(/\\D/g, "");
   if (!orderId || phone.length < 10) return res.status(400).json({ error: "Enter your order ID and registered mobile number." });
-  const order = readJson(ORDERS_FILE).find(o => {
+  const order = (await readRecords("orders")).find(o => {
     const savedPhone = String(o.phone || "").replace(/\\D/g, "");
     return o.id === orderId && savedPhone.slice(-10) === phone.slice(-10);
   });
@@ -359,35 +346,36 @@ app.post("/api/track-order", (req, res) => {
     createdAt: order.createdAt,
     items: (order.items || []).map(item => ({ name: item.name, quantity: item.quantity, size: item.size || "" }))
   });
-});
-app.get("/api/orders/:id/status", (req, res) => {
-  const order = readJson(ORDERS_FILE).find(o => o.id === req.params.id);
+}));
+app.get("/api/orders/:id/status", requireSupabase, asyncRoute(async (req, res) => {
+  const order = (await readRecords("orders")).find(o => o.id === req.params.id);
   if (!order) return res.status(404).json({ error: "Order not found." });
   res.json({ id: order.id, status: order.status });
-});
-app.get("/api/admin/orders", requireAdmin, (req, res) => res.json(readJson(ORDERS_FILE)));
-app.patch("/api/admin/orders/:id", requireAdmin, (req, res) => {
+}));
+app.get("/api/admin/orders", requireAdmin, requireSupabase, asyncRoute(async (req, res) => res.json(await readRecords("orders"))));
+app.patch("/api/admin/orders/:id", requireAdmin, requireSupabase, asyncRoute(async (req, res) => {
   const allowed = ["PENDING_PAYMENT", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
   const status = cleanText(req.body.status, 40);
   if (!allowed.includes(status)) return res.status(400).json({ error: "Invalid order status." });
-  const orders = readJson(ORDERS_FILE);
+  const orders = await readRecords("orders");
   const order = orders.find(o => o.id === req.params.id);
   if (!order) return res.status(404).json({ error: "Order not found." });
   const previousStatus = order.status;
   order.status = status;
   order.updatedAt = new Date().toISOString();
-  writeJson(ORDERS_FILE, orders);
+  await saveRecord("orders", order);
   if (previousStatus !== status) {
     sendCustomerStatusSms(order, status).catch(err => console.error("[Customer status SMS] Alert error:", err.message));
   }
   res.json(order);
-});
+}));
 app.get("/admin", (req, res) => res.sendFile(path.join(PUBLIC_DIR, "admin.html")));
 app.get("*", (req, res) => res.sendFile(path.join(PUBLIC_DIR, "index.html")));
 
 app.listen(PORT, () => {
   console.log(`${SHOP_NAME} running on http://localhost:${PORT}`);
-  console.log("Product/order data is stored locally in the data/ folder.");
+  console.log(supabase ? "Product/order data is stored in Supabase." : "WARNING: Supabase is not configured; database routes will be unavailable.");
   if (!SESSION_SECRET || SESSION_SECRET.length < 32) console.warn("WARNING: SESSION_SECRET must be at least 32 characters. Set it in .env.");
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD) console.warn("WARNING: Set ADMIN_EMAIL and ADMIN_PASSWORD in .env before admin login.");
+  if (!supabase) console.warn("WARNING: Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Render Environment.");
 });
