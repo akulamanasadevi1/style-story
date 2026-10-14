@@ -1152,31 +1152,37 @@ $("#checkoutForm [name=phone]").addEventListener("input",e=>{e.target.value=e.ta
 $("#checkoutForm").onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const btn=e.target.querySelector("button[type=submit]");btn.disabled=true;btn.textContent="Creating order…";try{const r=await fetch("/api/checkout/upi-order",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customerName:f.get("customerName"),phone:f.get("phone"),address:f.get("address"),pincode:f.get("pincode"),items:cart.map(x=>({...x}))})});const data=await r.json();if(!r.ok)throw new Error(data.error||"Could not create order.");
 if(data.paymentMode==="razorpay"){
   const result=$("#paymentResult");
-  result.innerHTML=`<div style="margin-top:18px;padding:20px;background:#fff;text-align:left;border:1px solid #eadbd4;border-radius:16px"><p style="letter-spacing:2px;font-size:11px;font-weight:700;color:#9a6425;margin:0 0 8px;text-align:center">STYLE STORY</p><h2 style="margin:0 0 8px;text-align:center">Order Summary</h2><p style="text-align:center;margin:0 0 16px">Order ID: <strong>${esc(data.order.id)}</strong></p><div style="background:#fffaf5;border:1px solid #eadbd4;border-radius:10px;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 0 10px"><span>Product cost</span><strong>${money(data.order.subtotal)}</strong></div><div style="display:flex;justify-content:space-between;gap:12px;margin:0 0 12px"><span>Shipping charge</span><strong>${money(data.order.shipping)}</strong></div><div style="height:1px;background:#eadbd4;margin-bottom:12px"></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:17px"><strong>Total payable</strong><strong>${money(data.order.total)}</strong></div></div><p class="small" style="text-align:center;margin:14px 0 8px">Please review the amount before paying. Test mode only.</p><p id="razorpayStatus" role="status" style="text-align:center">Opening secure checkout…</p><button type="button" class="pill" id="finishRazorpay" style="display:block;margin:12px auto 0">Continue Shopping</button></div>`;
+  result.innerHTML=`<div style="margin-top:18px;padding:20px;background:#fff;text-align:left;border:1px solid #eadbd4;border-radius:16px"><p style="letter-spacing:2px;font-size:11px;font-weight:700;color:#9a6425;margin:0 0 8px;text-align:center">STYLE STORY</p><h2 style="margin:0 0 8px;text-align:center">Order Summary</h2><p style="text-align:center;margin:0 0 16px">Order ID: <strong>${esc(data.order.id)}</strong></p><div style="background:#fffaf5;border:1px solid #eadbd4;border-radius:10px;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 0 10px"><span>Product cost</span><strong>${money(data.order.subtotal)}</strong></div><div style="display:flex;justify-content:space-between;gap:12px;margin:0 0 12px"><span>Shipping charge</span><strong>${money(data.order.shipping)}</strong></div><div style="height:1px;background:#eadbd4;margin-bottom:12px"></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:17px"><strong>Total payable</strong><strong>${money(data.order.total)}</strong></div></div><p class="small" style="text-align:center;margin:14px 0 8px">Review your order amount, then tap Pay Now to continue to secure checkout.</p><p id="razorpayStatus" role="status" style="text-align:center"></p><button type="button" class="primary" id="payNowButton" style="display:block;width:100%;margin-top:12px">PAY NOW · ${money(data.order.total)}</button><button type="button" class="pill" id="finishRazorpay" style="display:block;margin:12px auto 0">Continue Shopping</button></div>`;
   const status=$("#razorpayStatus");
+  const payButton=$("#payNowButton");
   $("#finishRazorpay").onclick=()=>{hide("#checkoutOverlay");result.innerHTML="";};
   const loadCheckout=()=>new Promise((resolve,reject)=>{if(window.Razorpay)return resolve();const script=document.createElement("script");script.src="https://checkout.razorpay.com/v1/checkout.js";script.onload=resolve;script.onerror=()=>reject(new Error("Could not load secure checkout. Please try again."));document.head.appendChild(script);});
-  try{
-    await loadCheckout();
-    const checkout=new Razorpay({
-      key:data.razorpayKeyId,amount:Math.round(Number(data.order.total)*100),currency:"INR",
-      name:config.shopName||"Style Story",description:"Style Story order "+data.order.id,
-      order_id:data.razorpayOrderId,prefill:{name:data.order.customerName,contact:data.order.phone},
-      notes:{style_story_order_id:data.order.id},theme:{color:"#6f432d"},
-      handler:async function(response){
-        status.textContent="Verifying payment securely…";
-        try{
-          const verify=await fetch("/api/checkout/razorpay/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({orderId:data.order.id,razorpay_payment_id:response.razorpay_payment_id,razorpay_order_id:response.razorpay_order_id,razorpay_signature:response.razorpay_signature})});
-          const verified=await verify.json();
-          if(!verify.ok||!verified.ok)throw new Error(verified.error||"Payment could not be verified.");
-          status.textContent="Payment verified successfully. Your order is confirmed!";
-          toast("Payment successful — order confirmed.");cart=[];renderCart();localStorage.setItem(CART_STORAGE_KEY,JSON.stringify(cart));
-        }catch(err){status.textContent=err.message+" If money was deducted, do not pay again; contact the shop and share your order ID."}
-      },
-      modal:{ondismiss:function(){status.textContent="Checkout closed. Your order is still pending payment; you can continue shopping or retry checkout."}}
-    });
-    checkout.open();
-  }catch(err){status.textContent=err.message;}
+  payButton.onclick=async()=>{
+    payButton.disabled=true;payButton.textContent="OPENING SECURE CHECKOUT…";
+    try{
+      await loadCheckout();
+      const checkout=new Razorpay({
+        key:data.razorpayKeyId,amount:Math.round(Number(data.order.total)*100),currency:"INR",
+        name:config.shopName||"Style Story",description:"Style Story order "+data.order.id,
+        order_id:data.razorpayOrderId,prefill:{name:data.order.customerName,contact:data.order.phone},
+        notes:{style_story_order_id:data.order.id},theme:{color:"#6f432d"},
+        handler:async function(response){
+          status.textContent="Verifying payment securely…";
+          try{
+            const verify=await fetch("/api/checkout/razorpay/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({orderId:data.order.id,razorpay_payment_id:response.razorpay_payment_id,razorpay_order_id:response.razorpay_order_id,razorpay_signature:response.razorpay_signature})});
+            const verified=await verify.json();
+            if(!verify.ok||!verified.ok)throw new Error(verified.error||"Payment could not be verified.");
+            status.textContent="Payment verified successfully. Your order is confirmed!";
+            payButton.style.display="none";
+            toast("Payment successful — order confirmed.");cart=[];renderCart();localStorage.setItem(CART_STORAGE_KEY,JSON.stringify(cart));
+          }catch(err){status.textContent=err.message+" If money was deducted, do not pay again; contact the shop and share your order ID."}
+        },
+        modal:{ondismiss:function(){status.textContent="Checkout closed. Your order is still pending payment. Tap Pay Now to try again.";payButton.disabled=false;payButton.textContent="PAY NOW · "+money(data.order.total);}}
+      });
+      checkout.open();
+      payButton.textContent="PAY NOW · "+money(data.order.total);
+    }catch(err){status.textContent=err.message;payButton.disabled=false;payButton.textContent="PAY NOW · "+money(data.order.total);}
+  };
   return;
 }
 const q="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(data.upiLink);$("#paymentResult").innerHTML=`<div style="margin-top:18px;padding:20px;background:#fff;text-align:center;border:1px solid #eadbd4;border-radius:16px"><p style="letter-spacing:2px;font-size:11px;font-weight:700;color:#9a6425;margin:0 0 8px">STYLE STORY</p><h2 style="margin:0 0 8px">Complete Your Payment</h2><p style="margin:0 0 16px;color:#655b56">Your order has been created. Please complete the UPI payment to confirm it.</p><div style="background:#fbf6f2;border-radius:10px;padding:14px;text-align:left"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;flex-wrap:wrap"><span>Order ID: <strong id="newOrderId">${esc(data.order.id)}</strong></span><button type="button" class="pill" id="copyOrderId" style="padding:6px 10px">Copy Order ID</button></div><p style="margin:0 0 5px">Product subtotal: <strong>${money(data.order.subtotal)}</strong></p><p style="margin:0 0 5px">Shipping: <strong>${money(data.order.shipping)}</strong></p><p style="margin:0 0 8px">Total payable: <strong>${money(data.order.total)}</strong></p><p style="margin:0">Payment status: <strong id="livePaymentStatus" style="color:#9a6425">Pending payment</strong></p></div><h3 style="margin:18px 0 6px">Pay using UPI</h3><p class="small">Scan this QR code or tap the button below. Do not close this page if you want to see the payment status update.</p><img src="${q}" alt="UPI payment QR code" width="220" height="220" style="max-width:100%;display:block;margin:12px auto"><p>UPI ID: <strong>${esc(config.upiId)}</strong></p><a href="${esc(data.upiLink)}" class="primary" style="display:inline-block;text-decoration:none">Open UPI app</a><p class="small" style="margin-top:14px">After you pay, the shop must verify the payment in its UPI app and update your order. This page checks for that update while it remains open.</p><div id="paidConfirmation" style="display:none;margin-top:18px;padding:16px;background:#eaf6ed;border-radius:12px;color:#236b3b"><div style="font-size:30px">✓</div><h2 style="margin:4px 0">Thank You for Your Order!</h2><p>Your payment has been verified and your order is confirmed.</p></div><button type="button" class="pill" id="finishOrder" style="margin-top:12px">Continue Shopping</button></div>`;$("#copyOrderId").onclick=async()=>{try{await navigator.clipboard.writeText(data.order.id);$("#copyOrderId").textContent="Copied ✓"}catch(_e){const t=document.createElement("textarea");t.value=data.order.id;document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();$("#copyOrderId").textContent=ok?"Copied ✓":"Copy failed"}};let paymentCheck=setInterval(async()=>{try{const sr=await fetch("/api/orders/"+encodeURIComponent(data.order.id)+"/status");if(!sr.ok)return;const st=await sr.json();if(st.status==="PAID"||["PROCESSING","SHIPPED","DELIVERED"].includes(st.status)){clearInterval(paymentCheck);$("#livePaymentStatus").textContent="Payment verified";$("#livePaymentStatus").style.color="#237342";$("#paidConfirmation").style.display="block";}}catch(_e){}},5000);$("#finishOrder").onclick=()=>{clearInterval(paymentCheck);hide("#checkoutOverlay");$("#paymentResult").innerHTML="";};cart=[];renderCart();e.target.reset()}catch(err){toast(err.message)}finally{btn.disabled=false;btn.textContent="CREATE ORDER & SHOW UPI PAYMENT"}};
