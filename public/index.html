@@ -1094,24 +1094,76 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 
 </style>
+
+<style>
+/* Clean, responsive text-based storefront header and hero */
+.topbar{display:block!important;background:#51382e!important;color:#fff5ed!important;text-align:center!important;padding:9px 12px!important;font-size:10px!important;letter-spacing:1.7px!important;font-weight:700!important}
+.store-header{position:relative!important;z-index:30!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:22px!important;padding:17px clamp(16px,5vw,72px)!important;background:#fffaf6!important;border-bottom:1px solid #eee0d6!important;box-shadow:0 4px 18px #51382e0a!important;min-height:82px!important}
+.store-logo{display:flex!important;flex-direction:column!important;align-items:flex-start!important;position:relative!important;color:#51382e!important;text-decoration:none!important;font-family:Georgia,serif!important;font-size:31px!important;line-height:.9!important;font-weight:700!important;letter-spacing:-1.4px!important;white-space:nowrap!important}
+.store-logo span{display:inline!important;color:#b75e79!important}
+.store-logo small{margin-top:8px!important;font:700 8px/1.2 Arial,sans-serif!important;letter-spacing:2px!important;color:#92756a!important}
+.store-navigation{display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(12px,2.4vw,34px)!important;flex:1!important}
+.store-navigation a{color:#57443b!important;text-decoration:none!important;font-size:13px!important;font-weight:650!important;white-space:nowrap!important;padding:9px 0!important;border-bottom:2px solid transparent!important}
+.store-navigation a:hover,.store-navigation a.active{color:#b75e79!important;border-bottom-color:#b75e79!important}
+.store-actions{display:flex!important;align-items:center!important;gap:14px!important}
+.store-actions button,.store-actions a,.mobile-store-actions button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:34px!important;min-height:36px!important;padding:4px!important;border:0!important;background:transparent!important;color:#51382e!important;text-decoration:none!important;font-size:24px!important;cursor:pointer!important}
+.image-cart-count{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:18px!important;height:18px!important;border-radius:50%!important;background:#b75e79!important;color:white!important;font:700 10px Arial,sans-serif!important}
+.mobile-store-actions{display:none!important}
+.store-hero{display:grid!important;grid-template-columns:1.05fr .95fr!important;align-items:center!important;gap:24px!important;min-height:410px!important;padding:clamp(34px,6vw,76px) clamp(22px,8vw,120px)!important;overflow:hidden!important;background:linear-gradient(115deg,#fff8f2 0%,#f7e8e4 54%,#efd9d8 100%)!important;position:relative!important}
+.hero-copy{position:relative!important;z-index:2!important;max-width:590px!important}
+.hero-kicker{display:inline-block!important;color:#a4516d!important;font-size:10px!important;letter-spacing:2.5px!important;font-weight:800!important;margin-bottom:18px!important}
+.hero-copy h1{font-family:Georgia,serif!important;color:#4e352c!important;font-size:clamp(38px,5vw,66px)!important;line-height:1.05!important;letter-spacing:-1.7px!important;margin:0 0 18px!important;font-weight:500!important}
+.hero-copy h1 em{color:#b75e79!important;font-weight:500!important}
+.hero-copy p{color:#725d53!important;font-size:15px!important;line-height:1.8!important;max-width:440px!important;margin:0 0 26px!important}
+.hero-cta{display:inline-flex!important;align-items:center!important;gap:22px!important;padding:14px 20px!important;background:#593c31!important;color:#fff!important;text-decoration:none!important;border-radius:3px!important;font-size:11px!important;font-weight:800!important;letter-spacing:1.2px!important;box-shadow:0 8px 18px #593c3124!important}
+.hero-cta:hover{background:#a4516d!important}
+.hero-notes{display:flex!important;flex-wrap:wrap!important;gap:16px!important;margin-top:24px!important;color:#7b6359!important;font-size:11px!important}
+.hero-art{position:relative!important;min-height:300px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.hero-orbit{position:absolute!important;width:min(34vw,330px)!important;aspect-ratio:1!important;border:1px solid #c99594!important;border-radius:50%!important;box-shadow:0 0 0 18px #fff7f366,0 0 0 42px #fff7f344!important}
+.hero-swatch{position:absolute!important;border-radius:48% 48% 8px 8px!important;box-shadow:0 22px 38px #5d3b2e1c!important}
+.hero-swatch-one{width:39%!important;height:70%!important;left:17%!important;top:12%!important;transform:rotate(-9deg)!important;background:repeating-linear-gradient(135deg,#9b5263 0 7px,#b97080 7px 12px,#dca8a4 12px 15px)!important}
+.hero-swatch-two{width:38%!important;height:77%!important;right:15%!important;top:8%!important;transform:rotate(8deg)!important;background:repeating-linear-gradient(45deg,#d9b68c 0 7px,#f0d9b8 7px 13px,#8c6a55 13px 15px)!important}
+.hero-quote{position:relative!important;z-index:2!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:12px!important;text-align:center!important;background:#fffaf2ed!important;border:1px solid #fff!important;padding:24px 28px!important;box-shadow:0 14px 35px #6b45351c!important;transform:rotate(-2deg)!important}
+.hero-quote span,.hero-quote small{font:700 8px Arial,sans-serif!important;letter-spacing:2px!important;color:#a4516d!important}
+.hero-quote strong{font:italic 25px/1.2 Georgia,serif!important;color:#563b31!important}
+.hero-quote small{font-size:7px!important;color:#8e7668!important}
+.hero-sticker{position:absolute!important;right:2%!important;bottom:3%!important;display:grid!important;place-items:center!important;width:70px!important;height:70px!important;border-radius:50%!important;background:#b75e79!important;color:#fff!important;text-align:center!important;font-size:10px!important;font-weight:800!important;line-height:1.15!important;letter-spacing:1px!important;transform:rotate(10deg)!important;box-shadow:0 6px 14px #8c435422!important}
+@media(max-width:850px){.store-header{gap:12px!important;padding:14px 18px!important}.store-navigation{gap:12px!important}.store-navigation a{font-size:11px!important}.store-logo{font-size:27px!important}.store-actions{gap:5px!important}.store-hero{padding:34px 26px!important;gap:10px!important}.hero-copy h1{font-size:clamp(36px,6vw,50px)!important}.hero-art{min-height:260px!important}.hero-quote{padding:18px!important}.hero-quote strong{font-size:21px!important}}
+@media(max-width:650px){.topbar{font-size:9px!important;letter-spacing:1px!important;padding:8px 8px!important}.store-header{display:grid!important;grid-template-columns:1fr auto!important;gap:10px!important;padding:15px 16px!important;min-height:0!important}.store-logo{font-size:28px!important}.store-logo small{font-size:7px!important;margin-top:7px!important}.store-navigation{grid-column:1/-1!important;grid-row:2!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:2px!important;width:100%!important}.store-navigation a{display:flex!important;align-items:center!important;justify-content:center!important;white-space:normal!important;text-align:center!important;font-size:10px!important;line-height:1.2!important;padding:10px 2px!important;border-bottom:2px solid transparent!important}.store-navigation a.active{border-bottom-color:#b75e79!important}.store-actions{display:none!important}.mobile-store-actions{display:flex!important;align-items:center!important;gap:10px!important}.mobile-store-actions button{font-size:24px!important;min-width:32px!important}.mobile-store-actions #mobileCartCount{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:17px!important;height:17px!important;border-radius:50%!important;background:#b75e79!important;color:white!important;font:700 10px Arial,sans-serif!important}.store-hero{grid-template-columns:1fr!important;gap:8px!important;padding:34px 22px 26px!important;min-height:0!important}.hero-kicker{font-size:9px!important;letter-spacing:2px!important;margin-bottom:13px!important}.hero-copy h1{font-size:clamp(38px,10vw,52px)!important;line-height:1.04!important;margin-bottom:13px!important}.hero-copy p{font-size:13px!important;line-height:1.65!important;margin-bottom:20px!important;max-width:370px!important}.hero-cta{padding:13px 16px!important;font-size:10px!important;gap:16px!important}.hero-notes{gap:10px!important;font-size:10px!important;margin-top:18px!important}.hero-art{min-height:230px!important;margin:0 4px!important}.hero-orbit{width:230px!important;max-width:70vw!important}.hero-swatch-one{left:17%!important;width:35%!important;height:70%!important}.hero-swatch-two{right:16%!important;width:35%!important;height:76%!important}.hero-quote{padding:17px 20px!important}.hero-quote strong{font-size:22px!important}.hero-sticker{right:2%!important;bottom:0!important;width:58px!important;height:58px!important;font-size:8px!important}}
+@media(max-width:360px){.store-navigation a{font-size:9px!important}.store-header{padding-left:11px!important;padding-right:11px!important}.hero-copy h1{font-size:36px!important}.hero-notes{flex-direction:column!important;gap:7px!important}}
+</style>
 </head>
 <body>
-<div class="topbar">A LITTLE STYLE, A LOT OF YOU · NEW LOOKS, EVERY DAY</div>
-<div class="mobile-announcement">All India Shipping in 5–6 days</div>
-<div class="mobile-store-header"><a href="/" class="mobile-store-logo">style <span>story</span></a><div class="mobile-header-actions"><button type="button" id="mobileSearch" aria-label="Search">⌕</button><a href="#shop" aria-label="Favourites">♡</a><button type="button" id="mobileCart" aria-label="Shopping bag">♧</button></div></div>
-<nav class="mobile-nav-row" aria-label="Mobile navigation"><a href="/">Home</a><a href="#shop">Shop⌄</a><a href="#about">Our story</a><a href="/track.html">Track order</a></nav>
-<header class="nav exact-image-nav" aria-label="Store navigation">
-<a class="hotspot home-hotspot" href="/" aria-label="Home"></a>
-<a class="hotspot shop-hotspot" href="#shop" aria-label="Shop"></a>
-<a class="hotspot story-hotspot" href="#about" aria-label="Our story"></a>
-<a class="hotspot track-hotspot" href="/track.html" aria-label="Track order"></a>
-<button class="hotspot search-hotspot" id="navSearch" type="button" aria-label="Search products"></button>
-<a class="hotspot favourite-hotspot" href="#shop" aria-label="Browse favourites"></a>
-<button class="hotspot bag-hotspot" id="cartNav" aria-label="Shopping bag"> <span id="cartCount" class="image-cart-count">0</span> </button>
+<div class="topbar">A LITTLE STYLE, A LOT OF YOU · FREE SHIPPING UPDATES AT CHECKOUT</div>
+<header class="store-header">
+  <a href="/" class="store-logo" aria-label="Style Story home">style <span>story</span><small>WEAR YOUR STORY</small></a>
+  <nav class="store-navigation" aria-label="Main navigation">
+    <a href="/" class="active">Home</a><a href="#shop">Shop</a><a href="#newArrivals">New Arrivals</a><a href="#about">Our Story</a><a href="/track.html">Track Order</a>
+  </nav>
+  <div class="store-actions">
+    <button type="button" id="navSearch" aria-label="Search products" title="Search products">⌕</button>
+    <a href="#shop" aria-label="Browse favourites" title="Favourites">♡</a>
+    <button type="button" id="cartNav" aria-label="Shopping bag" title="Shopping bag">♧ <span id="cartCount" class="image-cart-count">0</span></button>
+  </div>
+  <div class="mobile-store-actions">
+    <button type="button" id="mobileSearch" aria-label="Search products">⌕</button>
+    <button type="button" id="mobileCart" aria-label="Shopping bag">♧ <span id="mobileCartCount">0</span></button>
+  </div>
 </header>
-<section class="exact-image-hero" aria-label="Style Story — Wear Your Own Story">
-<img class="exact-banner" src="/images/Style%20Story_%20Wear%20Your%20Own%20Story.png" alt="Style Story pink and gold fashion storefront banner with the message Wear your own story" fetchpriority="high">
-<button class="hotspot explore-hotspot" id="exploreCollection" type="button" aria-label="Explore the collection"></button>
+<section class="store-hero" aria-label="Welcome to Style Story">
+  <div class="hero-copy">
+    <span class="hero-kicker">YOUR STYLE, YOUR STORY</span>
+    <h1>Wear what feels <em>like you.</em></h1>
+    <p>Discover beautiful everyday looks, timeless sarees and outfits for every special moment.</p>
+    <a class="hero-cta" href="#shop">SHOP THE COLLECTION <span aria-hidden="true">↗</span></a>
+    <div class="hero-notes"><span>♡ Carefully picked styles</span><span>✦ Made for your moments</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="hero-orbit"></div>
+    <div class="hero-swatch hero-swatch-one"></div><div class="hero-swatch hero-swatch-two"></div>
+    <div class="hero-quote"><span>STYLE NOTE</span><strong>Be your own<br>kind of beautiful.</strong><small>STYLE STORY · EST. WITH LOVE</small></div>
+    <div class="hero-sticker">FIND<br>YOUR<br>FEEL</div>
+  </div>
 </section>
 <section class="category-showcase" aria-label="Shop by category">
   <div class="category-heading"><div class="eyebrow">Find your look</div><h2>Shop by Category</h2><p>Pieces for every mood, moment and occasion.</p></div>
