@@ -1109,6 +1109,172 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .details-btn,.buy-now{font-size:10px!important;padding:8px 4px!important}
 }
 </style>
+
+<style>
+/* Final alignment fix for Shop and New Arrivals cards */
+#products,
+#newArrivalProducts{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:clamp(12px,1.6vw,22px)!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#products .product,
+#newArrivalProducts .product{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+#products .product-info,
+#newArrivalProducts .product-info{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+#products .price-row,
+#newArrivalProducts .price-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-width:0!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+#products .price-stack,
+#newArrivalProducts .price-stack{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+}
+#products .price,
+#newArrivalProducts .price,
+#products .old-price,
+#newArrivalProducts .old-price{
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#products .offer-badge,
+#newArrivalProducts .offer-badge{
+  display:inline-flex!important;
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  box-sizing:border-box!important;
+}
+#products .add,
+#newArrivalProducts .add{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  justify-self:end!important;
+  flex:0 1 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:9px 12px!important;
+  white-space:nowrap!important;
+  box-sizing:border-box!important;
+  line-height:1.2!important;
+}
+#products .product-actions,
+#newArrivalProducts .product-actions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#products .details-btn,#products .buy-now,
+#newArrivalProducts .details-btn,#newArrivalProducts .buy-now{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:10px 5px!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  box-sizing:border-box!important;
+}
+#newArrivals .section-head{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+#newArrivals .section-head>div{min-width:0!important}
+#newArrivals .text-link{flex:0 0 auto!important}
+@media(max-width:900px){
+  #products,#newArrivalProducts{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:650px){
+  #products,#newArrivalProducts{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  #products .product-info,#newArrivalProducts .product-info{padding:9px!important}
+  #products .price-row,#newArrivalProducts .price-row{
+    grid-template-columns:minmax(0,1fr) 38px!important;
+    gap:5px!important;
+    align-items:center!important;
+    min-height:0!important;
+  }
+  #products .price,#newArrivalProducts .price{font-size:14px!important}
+  #products .old-price,#newArrivalProducts .old-price{font-size:10px!important}
+  #products .offer-badge,#newArrivalProducts .offer-badge{
+    padding:4px 5px!important;
+    font-size:8px!important;
+    line-height:1.15!important;
+  }
+  #products .add,#newArrivalProducts .add{
+    width:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    min-height:38px!important;
+    padding:4px!important;
+    font-size:11px!important;
+    border-radius:10px!important;
+  }
+  #products .product-actions,#newArrivalProducts .product-actions{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:6px!important;
+    padding-top:10px!important;
+  }
+  #products .details-btn,#products .buy-now,
+  #newArrivalProducts .details-btn,#newArrivalProducts .buy-now{
+    min-height:39px!important;
+    font-size:11px!important;
+    padding:8px 4px!important;
+  }
+  #newArrivals .section-head{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    gap:8px!important;
+    margin-bottom:20px!important;
+  }
+  #newArrivals .section-head>div{width:100%!important}
+}
+@media(max-width:360px){
+  #products,#newArrivalProducts{gap:8px!important}
+  #products .product-info,#newArrivalProducts .product-info{padding:7px!important}
+  #products .price,#newArrivalProducts .price{font-size:13px!important}
+  #products .add,#newArrivalProducts .add{
+    width:34px!important;min-width:34px!important;max-width:34px!important;min-height:34px!important
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="topbar">A LITTLE STYLE, A LOT OF YOU · FREE SHIPPING UPDATES AT CHECKOUT</div>
