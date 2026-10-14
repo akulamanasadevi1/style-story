@@ -1371,5 +1371,11 @@ setInterval(refreshProductsSilently,3000);
   #products .add{flex-basis:36px!important;width:36px!important;min-width:36px!important}
   #products .details-btn,#products .buy-now{font-size:11px!important}
 }
+
+/* Logo contrast fix: keep both words bold and readable on every screen */
+.store-logo{color:#552344!important;-webkit-text-fill-color:#552344!important;text-shadow:0 1px 0 #fff,0 3px 10px #7d2f7518!important;font-weight:800!important}
+.store-logo span{display:inline!important;background:none!important;background-image:none!important;background-clip:border-box!important;-webkit-background-clip:border-box!important;color:#d72f87!important;-webkit-text-fill-color:#d72f87!important;text-shadow:0 1px 0 #fff!important;font-style:italic!important;font-weight:800!important;opacity:1!important}
+.store-logo small{color:#96376f!important;-webkit-text-fill-color:#96376f!important;font-weight:800!important;text-shadow:none!important}
+@media(max-width:650px){.store-logo{font-size:30px!important;letter-spacing:-1.4px!important}.store-logo span{color:#d72f87!important;-webkit-text-fill-color:#d72f87!important}.store-logo small{font-size:7px!important;letter-spacing:2px!important}}
 </style>
 </body></html>
