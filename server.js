@@ -315,12 +315,19 @@ app.get("/api/products", requireSupabase, asyncRoute(async (req, res) => {
   const products = (await readProducts()).filter(p => p.active !== false);
   const paidStatuses = new Set(["PAID", "PROCESSING", "SHIPPED", "DELIVERED"]);
   const sales = new Map();
-  for (const order of await readRecords("orders")) {
-    if (!paidStatuses.has(order.status)) continue;
-    for (const item of order.items || []) {
-      const id = String(item.id ?? item.productId ?? "");
-      if (id) sales.set(id, (sales.get(id) || 0) + Math.max(0, Number(item.quantity) || 0));
+  // Sales counts are optional display data. If the orders table is temporarily
+  // unavailable, keep the public collection working instead of failing the
+  // entire products API.
+  try {
+    for (const order of await readRecords("orders")) {
+      if (!paidStatuses.has(order.status)) continue;
+      for (const item of order.items || []) {
+        const id = String(item.id ?? item.productId ?? "");
+        if (id) sales.set(id, (sales.get(id) || 0) + Math.max(0, Number(item.quantity) || 0));
+      }
     }
+  } catch (error) {
+    console.error("[PRODUCTS_SALES_COUNT_SKIPPED]", error.message || error);
   }
   res.json(products.map(product => ({ ...product, soldCount: sales.get(String(product.id)) || 0 })));
 }));
