@@ -1179,6 +1179,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .store-actions button:hover,.store-actions a:hover,.mobile-store-actions button:hover{background:linear-gradient(135deg,#ed4d99,#9d4bc1)!important;color:#fff!important}
 .image-cart-count,.mobile-store-actions #mobileCartCount{background:linear-gradient(135deg,#e83e91,#8f43b7)!important;color:#fff!important}
 @media(max-width:650px){.store-header{background:linear-gradient(110deg,#fff0f7 0%,#ffe1ef 42%,#eee2ff 76%,#fff0d9 100%)!important}.store-navigation a{background:#ffffffa8!important;border:1px solid #f1c9e0!important}.store-navigation a:hover,.store-navigation a.active{background:linear-gradient(100deg,#e83e91,#bd52bd)!important;color:#fff!important;border-color:transparent!important}}
+
+
+/* Mobile dress/product cards: show three products in each row */
+@media(max-width:650px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+  .product{min-width:0!important;border-radius:12px!important}
+  .product-image{aspect-ratio:3/4!important;overflow:hidden!important}
+  .product-image img{width:100%!important;height:100%!important;object-fit:cover!important}
+  .product-info{padding:8px 7px!important}
+  .product-info h3{font-size:12px!important;line-height:1.25!important}
+  .price{font-size:14px!important}
+  .offer-badge{font-size:8px!important;padding:4px 5px!important}
+  .product-actions{grid-template-columns:1fr!important;gap:5px!important;padding-top:8px!important}
+  .details-btn,.buy-now{font-size:10px!important;padding:8px 4px!important}
+}
 </style>
 </head>
 <body>
@@ -1308,18 +1323,3 @@ $("#year").textContent=new Date().getFullYear();load().then(()=>{renderCart();if
 setInterval(refreshProductsSilently,3000);
 </script>
 </body></html>
-
-
-/* Mobile dress/product cards: show three products in each row */
-@media(max-width:650px){
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
-  .product{min-width:0!important;border-radius:12px!important}
-  .product-image{aspect-ratio:3/4!important;overflow:hidden!important}
-  .product-image img{width:100%!important;height:100%!important;object-fit:cover!important}
-  .product-info{padding:8px 7px!important}
-  .product-info h3{font-size:12px!important;line-height:1.25!important}
-  .price{font-size:14px!important}
-  .offer-badge{font-size:8px!important;padding:4px 5px!important}
-  .product-actions{grid-template-columns:1fr!important;gap:5px!important;padding-top:8px!important}
-  .details-btn,.buy-now{font-size:10px!important;padding:8px 4px!important}
-}
