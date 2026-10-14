@@ -40,7 +40,7 @@ if (!fs.existsSync(PRODUCTS_FILE)) fs.writeFileSync(PRODUCTS_FILE, "[]\n");
 if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, "[]\n");
 
 app.disable("x-powered-by");
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "1mb", verify: (req, res, buf) => { req.rawBody = Buffer.from(buf); } }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(PUBLIC_DIR, { extensions: ["html"] }));
 // Serve uploaded product images from the persistent disk when DATA_DIR is configured.
@@ -308,7 +308,7 @@ app.delete("/api/admin/products/:id", requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-app.post("/api/checkout/upi-order", (req, res) => {
+app.post("/api/checkout/upi-order", async (req, res) => {
   const customerName = cleanText(req.body.customerName, 120);
   const phone = String(req.body.phone || "").replace(/\D/g, "");
   const address = cleanText(req.body.address, 500);
@@ -334,14 +334,99 @@ app.post("/api/checkout/upi-order", (req, res) => {
     customerName, phone, address, pincode, items: orderItems, total: Math.round(total * 100) / 100,
     status: "PENDING_PAYMENT", createdAt: new Date().toISOString()
   };
+  let razorpayOrder = null;
+  const razorpayEnabled = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+  if (razorpayEnabled) {
+    try {
+      const rpResponse = await fetch("https://api.razorpay.com/v1/orders", {
+        method: "POST",
+        headers: {
+          "Authorization": "Basic " + Buffer.from(process.env.RAZORPAY_KEY_ID + ":" + process.env.RAZORPAY_KEY_SECRET).toString("base64"),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ amount: Math.round(order.total * 100), currency: "INR", receipt: order.id, notes: { style_story_order_id: order.id } })
+      });
+      const rpData = await rpResponse.json().catch(() => ({}));
+      if (!rpResponse.ok || !rpData.id) {
+        console.error("[Razorpay order] Create failed:", rpData.error?.description || rpResponse.status);
+        return res.status(502).json({ error: "Could not start secure online payment. Please try again or contact the shop." });
+      }
+      razorpayOrder = rpData;
+      order.razorpayOrderId = rpData.id;
+      order.paymentProvider = "razorpay";
+    } catch (err) {
+      console.error("[Razorpay order] Network error:", err.message);
+      return res.status(502).json({ error: "Online payment service is temporarily unavailable. Please try again." });
+    }
+  }
   const orders = readJson(ORDERS_FILE);
   orders.unshift(order);
   writeJson(ORDERS_FILE, orders);
   sendCustomerOrderSms(order).catch(err => console.error("[Customer order SMS] Alert error:", err.message));
   sendAdminSmsAlert(order).catch(err => console.error("[Admin SMS] Alert error:", err.message));
   sendWhatsAppOrderAlert(order).catch(err => console.error("[WhatsApp] Alert error:", err.message));
+  if (razorpayOrder) {
+    return res.status(201).json({ order, paymentMode: "razorpay", razorpayOrderId: razorpayOrder.id, razorpayKeyId: process.env.RAZORPAY_KEY_ID, currency: "INR" });
+  }
   const params = new URLSearchParams({ pa: SHOP_UPI_ID, pn: SHOP_NAME, am: order.total.toFixed(2), cu: "INR", tn: `Order ${order.id}` });
-  res.status(201).json({ order, upiLink: `upi://pay?${params.toString()}` });
+  res.status(201).json({ order, upiLink: `upi://pay?${params.toString()}`, paymentMode: "upi" });
+});
+app.post("/api/checkout/razorpay/verify", async (req, res) => {
+  const localOrderId = cleanText(req.body.orderId, 100);
+  const paymentId = cleanText(req.body.razorpay_payment_id, 100);
+  const providerOrderId = cleanText(req.body.razorpay_order_id, 100);
+  const signature = cleanText(req.body.razorpay_signature, 256);
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!secret || !process.env.RAZORPAY_KEY_ID || !localOrderId || !paymentId || !providerOrderId || !signature) return res.status(400).json({ error: "Payment verification details are incomplete." });
+  const expected = crypto.createHmac("sha256", secret).update(providerOrderId + "|" + paymentId).digest("hex");
+  if (!safeEqual(expected, signature)) return res.status(400).json({ error: "Payment signature verification failed." });
+  const orders = readJson(ORDERS_FILE);
+  const order = orders.find(o => o.id === localOrderId);
+  if (!order || order.razorpayOrderId !== providerOrderId) return res.status(404).json({ error: "Order could not be matched to this payment." });
+  try {
+    const paymentResponse = await fetch("https://api.razorpay.com/v1/payments/" + encodeURIComponent(paymentId), {
+      headers: { "Authorization": "Basic " + Buffer.from(process.env.RAZORPAY_KEY_ID + ":" + secret).toString("base64") }
+    });
+    const payment = await paymentResponse.json().catch(() => ({}));
+    if (!paymentResponse.ok || payment.order_id !== providerOrderId || Number(payment.amount) !== Math.round(Number(order.total) * 100) || payment.currency !== "INR" || payment.status !== "captured") {
+      return res.status(400).json({ error: "Payment is not confirmed as captured yet. If money was deducted, please contact the shop before paying again." });
+    }
+    if (order.status === "PENDING_PAYMENT") {
+      order.status = "PAID";
+      order.razorpayPaymentId = paymentId;
+      order.paymentVerifiedAt = new Date().toISOString();
+      order.updatedAt = order.paymentVerifiedAt;
+      writeJson(ORDERS_FILE, orders);
+      sendCustomerStatusSms(order, "PAID").catch(err => console.error("[Customer status SMS] Alert error:", err.message));
+    }
+    return res.json({ ok: true, orderId: order.id, status: order.status });
+  } catch (err) {
+    console.error("[Razorpay verification] Error:", err.message);
+    return res.status(502).json({ error: "Could not verify payment right now. Please refresh order status shortly." });
+  }
+});
+app.post("/api/webhooks/razorpay", (req, res) => {
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const signature = req.get("x-razorpay-signature") || "";
+  if (!webhookSecret || !req.rawBody || !signature) return res.status(400).send("Webhook is not configured.");
+  const expected = crypto.createHmac("sha256", webhookSecret).update(req.rawBody).digest("hex");
+  if (!safeEqual(expected, signature)) return res.status(400).send("Invalid webhook signature.");
+  const event = req.body;
+  if (event?.event !== "payment.captured") return res.json({ ok: true, ignored: true });
+  const payment = event.payload?.payment?.entity;
+  if (!payment?.order_id || payment.status !== "captured" || payment.currency !== "INR") return res.json({ ok: true, ignored: true });
+  const orders = readJson(ORDERS_FILE);
+  const order = orders.find(o => o.razorpayOrderId === payment.order_id);
+  if (!order || Number(payment.amount) !== Math.round(Number(order.total) * 100)) return res.json({ ok: true, ignored: true });
+  if (order.status === "PENDING_PAYMENT") {
+    order.status = "PAID";
+    order.razorpayPaymentId = payment.id;
+    order.paymentVerifiedAt = new Date().toISOString();
+    order.updatedAt = order.paymentVerifiedAt;
+    writeJson(ORDERS_FILE, orders);
+    sendCustomerStatusSms(order, "PAID").catch(err => console.error("[Customer status SMS] Alert error:", err.message));
+  }
+  return res.json({ ok: true });
 });
 app.post("/api/track-order", (req, res) => {
   const orderId = cleanText(req.body.orderId, 100);
