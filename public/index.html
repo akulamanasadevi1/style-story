@@ -1171,6 +1171,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .category-tile strong{font-size:clamp(18px,5vw,22px) !important}
 }
 
+
+/* HARD OVERRIDE: desktop category cards must use a simple aligned 3-column grid */
+@media (min-width:801px){
+  .category-showcase{padding:52px clamp(28px,4vw,72px) 48px!important}
+  .category-heading{max-width:100%!important;text-align:center!important;margin:0 auto 28px!important}
+  .category-tiles{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    width:100%!important;max-width:1600px!important;
+    margin:0 auto!important;gap:18px!important;align-items:stretch!important;
+  }
+  .category-tiles>.category-tile,
+  .category-tiles>.category-tile:nth-child(n){
+    grid-column:auto!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    min-height:178px!important;height:100%!important;margin:0!important;
+    justify-self:stretch!important;align-self:stretch!important;
+    box-sizing:border-box!important;
+  }
+}
+@media (min-width:651px) and (max-width:800px){
+  .category-tiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+  .category-tiles>.category-tile,.category-tiles>.category-tile:nth-child(n){grid-column:auto!important;min-width:0!important;width:100%!important;min-height:155px!important}
+}
+
 </style>
 
 <style>
