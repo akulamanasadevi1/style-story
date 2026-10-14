@@ -1395,5 +1395,11 @@ setInterval(refreshProductsSilently,3000);
 .hero-sticker{z-index:5!important;width:62px!important;height:62px!important;right:3%!important;bottom:4%!important;border:2px solid #ffffffb8!important;background:linear-gradient(145deg,#b3418a,#8a4ca2)!important;font-size:9px!important;box-shadow:0 8px 20px #65335a30!important}
 @media(max-width:850px){.hero-art{border-radius:22px!important}.hero-quote{max-width:88%!important;padding:20px!important}.hero-quote strong{font-size:clamp(21px,3.4vw,28px)!important}}
 @media(max-width:650px){.hero-art{border-radius:20px!important;min-height:245px!important;overflow:hidden!important}.hero-art:before{inset:8px!important;border-radius:15px!important}.hero-orbit{width:76%!important;box-shadow:0 0 0 10px #fff7fc70,0 0 0 22px #fff7fc38!important}.hero-swatch-one{left:15%!important;top:14%!important;width:38%!important;height:68%!important}.hero-swatch-two{right:14%!important;top:10%!important;width:37%!important;height:73%!important}.hero-quote{max-width:83%!important;padding:17px 14px!important;gap:9px!important}.hero-quote span{font-size:8px!important;letter-spacing:2px!important}.hero-quote strong{font-size:clamp(19px,5.5vw,25px)!important}.hero-quote small{font-size:6px!important;letter-spacing:1.2px!important}.hero-sticker{width:48px!important;height:48px!important;font-size:7px!important;right:3%!important;bottom:3%!important}}
+
+/* Keep the cart quantity badge anchored to the shopping-bag button, never the search icon */
+.store-actions #cartNav{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important}
+.store-actions #cartNav .image-cart-count{position:static!important;inset:auto!important;transform:none!important;order:2!important;margin:0!important;flex:0 0 18px!important}
+.store-actions #navSearch{position:relative!important}
+.store-actions #navSearch .image-cart-count{display:none!important}
 </style>
 </body></html>
