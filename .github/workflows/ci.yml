@@ -21,3 +21,5 @@ jobs:
         run: npm ci
       - name: Check server JavaScript syntax
         run: npm run check
+      - name: Check storefront inline JavaScript syntax
+        run: node scripts/check-inline-js.js
