@@ -1132,6 +1132,38 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:650px){.topbar{font-size:9px!important;letter-spacing:1px!important;padding:8px 8px!important}.store-header{display:grid!important;grid-template-columns:1fr auto!important;gap:10px!important;padding:15px 16px!important;min-height:0!important}.store-logo{font-size:28px!important}.store-logo small{font-size:7px!important;margin-top:7px!important}.store-navigation{grid-column:1/-1!important;grid-row:2!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:2px!important;width:100%!important}.store-navigation a{display:flex!important;align-items:center!important;justify-content:center!important;white-space:normal!important;text-align:center!important;font-size:10px!important;line-height:1.2!important;padding:10px 2px!important;border-bottom:2px solid transparent!important}.store-navigation a.active{border-bottom-color:#b75e79!important}.store-actions{display:none!important}.mobile-store-actions{display:flex!important;align-items:center!important;gap:10px!important}.mobile-store-actions button{font-size:24px!important;min-width:32px!important}.mobile-store-actions #mobileCartCount{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:17px!important;height:17px!important;border-radius:50%!important;background:#b75e79!important;color:white!important;font:700 10px Arial,sans-serif!important}.store-hero{grid-template-columns:1fr!important;gap:8px!important;padding:34px 22px 26px!important;min-height:0!important}.hero-kicker{font-size:9px!important;letter-spacing:2px!important;margin-bottom:13px!important}.hero-copy h1{font-size:clamp(38px,10vw,52px)!important;line-height:1.04!important;margin-bottom:13px!important}.hero-copy p{font-size:13px!important;line-height:1.65!important;margin-bottom:20px!important;max-width:370px!important}.hero-cta{padding:13px 16px!important;font-size:10px!important;gap:16px!important}.hero-notes{gap:10px!important;font-size:10px!important;margin-top:18px!important}.hero-art{min-height:230px!important;margin:0 4px!important}.hero-orbit{width:230px!important;max-width:70vw!important}.hero-swatch-one{left:17%!important;width:35%!important;height:70%!important}.hero-swatch-two{right:16%!important;width:35%!important;height:76%!important}.hero-quote{padding:17px 20px!important}.hero-quote strong{font-size:22px!important}.hero-sticker{right:2%!important;bottom:0!important;width:58px!important;height:58px!important;font-size:8px!important}}
 @media(max-width:360px){.store-navigation a{font-size:9px!important}.store-header{padding-left:11px!important;padding-right:11px!important}.hero-copy h1{font-size:36px!important}.hero-notes{flex-direction:column!important;gap:7px!important}}
 </style>
+
+<style>
+/* Colorful Style Story finish: richer boutique palette, soft gradients and playful accents */
+.topbar{background:linear-gradient(90deg,#6c315f,#b83f78,#e46b8e,#d28c50)!important;color:#fff!important;letter-spacing:1.35px!important}
+.store-header{background:linear-gradient(100deg,#fffaf5 0%,#fff0f5 48%,#fff5e8 100%)!important;border-bottom:1px solid #f0c9d6!important;box-shadow:0 5px 22px #b83f7814!important}
+.store-logo{color:#59314f!important;text-shadow:0 2px 0 #fff!important}
+.store-logo span{color:#e34e8b!important}
+.store-logo small{color:#9b5c80!important}
+.store-navigation a{color:#5b3c53!important;border-radius:18px!important;padding:10px 12px!important;transition:background .2s,color .2s!important}
+.store-navigation a:hover,.store-navigation a.active{background:#ffe0ec!important;color:#b52f72!important;border-bottom-color:transparent!important}
+.store-actions button,.store-actions a,.mobile-store-actions button{color:#a93470!important}
+.image-cart-count,.mobile-store-actions #mobileCartCount{background:linear-gradient(135deg,#e9488b,#a9387c)!important;box-shadow:0 2px 6px #b83f7833!important}
+.store-hero{background:radial-gradient(ellipse at 12% 15%,#fff 0%,transparent 34%),radial-gradient(ellipse at 88% 18%,#ffe2ef 0%,transparent 34%),linear-gradient(125deg,#fff0e8 0%,#f9d9e9 42%,#e9dffb 73%,#fff0d8 100%)!important;position:relative!important}
+.store-hero:before{content:"✦";position:absolute;top:8%;left:48%;font-size:32px;color:#e9a13c;opacity:.85;pointer-events:none}
+.store-hero:after{content:"✿";position:absolute;left:4%;bottom:9%;font-size:30px;color:#e36e9a;opacity:.55;pointer-events:none}
+.hero-kicker{color:#c03979!important;background:#ffe0ed!important;padding:8px 12px!important;border-radius:99px!important;letter-spacing:2px!important}
+.hero-copy h1{color:#583451!important}
+.hero-copy h1 em{background:linear-gradient(90deg,#d53e83,#8c54b8,#e27755)!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}
+.hero-copy p{color:#71556b!important}
+.hero-cta{background:linear-gradient(100deg,#a83778,#df4f89 58%,#e77963)!important;border-radius:99px!important;box-shadow:0 10px 22px #c23d7b36!important;transition:transform .2s,box-shadow .2s!important}
+.hero-cta:hover{background:linear-gradient(100deg,#7c3a91,#cc3f85)!important;transform:translateY(-2px)!important;box-shadow:0 13px 26px #c23d7b42!important}
+.hero-notes{color:#80566e!important}
+.hero-orbit{border-color:#d68bb5!important;box-shadow:0 0 0 18px #fff7fc99,0 0 0 42px #fff7fc55!important}
+.hero-swatch-one{background:repeating-linear-gradient(135deg,#a73572 0 7px,#e65b98 7px 12px,#f4aac9 12px 15px)!important}
+.hero-swatch-two{background:repeating-linear-gradient(45deg,#d69a3b 0 7px,#ffe0a3 7px 13px,#9a65b0 13px 15px)!important}
+.hero-quote{background:linear-gradient(145deg,#fffdf8ed,#fff0f6ed)!important;border-color:#fff!important;box-shadow:0 16px 38px #9e4c7a24!important}
+.hero-quote span{color:#d04385!important}
+.hero-quote strong{color:#633a60!important}
+.hero-quote small{color:#9c6586!important}
+.hero-sticker{background:linear-gradient(135deg,#e64d91,#a44392 70%,#7657b5)!important;box-shadow:0 8px 18px #a4439233!important}
+@media(max-width:650px){.store-header{background:linear-gradient(100deg,#fff7fb,#fff0e8 55%,#f5edff)!important}.store-navigation a:hover,.store-navigation a.active{background:#ffe0ec!important;color:#b52f72!important}.store-hero{background:radial-gradient(ellipse at 88% 10%,#ffe1ee 0%,transparent 42%),linear-gradient(145deg,#fff3e8 0%,#f9d8e9 54%,#e8dcfa 100%)!important}.hero-copy h1 em{background:linear-gradient(90deg,#d53e83,#8c54b8,#e27755)!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}}
+</style>
 </head>
 <body>
 <div class="topbar">A LITTLE STYLE, A LOT OF YOU · FREE SHIPPING UPDATES AT CHECKOUT</div>
