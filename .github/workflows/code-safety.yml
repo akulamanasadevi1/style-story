@@ -1,0 +1,22 @@
+name: Code safety check
+
+on:
+  pull_request:
+    branches: [supabase-storage]
+  push:
+    branches: [supabase-storage, fix/admin-product-edit-price]
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check server syntax
+        run: node --check server.js
+      - name: Verify product edit preserves edited base price
+        run: node -e "const fs=require('fs');const s=fs.readFileSync('server.js','utf8');if(!s.includes('offerBasePrice: Math.round(price * 100) / 100'))process.exit(1);console.log('Product edit base-price persistence assignment found.')"
